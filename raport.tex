@@ -1,0 +1,52 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl}
+
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true}
+
+
+\title{Part2Part}
+\author{Iacob Sergiu B1}
+\date{\normalsize\today}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\section{Introduction}
+
+\paragraph{}
+Part2Part is a peer-to-peer application meant to satisty a user's need of sharing files with colleagues. The facilities which this project brings are meant for anyone who wishes to transfer files with ease.
+Any user connected to this platform is able to share multiple files from his local storage and gives access to other users to these files so they can acquire them as well.
+
+\section{Technologies}
+The protocol used for communicating between the main server and the clients is UDP. As this protocol does not ensure the safe retrieval of every sent package (as TCP would do), the application manually does this by hash-verifying every package.
+The application also consists of an attractive GUI, which eases the process of sharing files. This will be build using  QT Creator.
+
+
+\paragraph{}
+
+
+\section{Architecture}
+\paragraph{}
+As this is a peer-to-peer application, each user will act as both a client and a server.
+The main server will filter all of the commands, the main ones being $GetFile(file X, from B)$ and $SendFile (file X, to B)$.
+The core of the Part2Part application consists in file sharing between users. When a certain user A executes a $GetFile(file X, from B)$ command, where B is a user whose file X is available for download, the user A will shortly have to his disposal the requested file.
+
+
+\section{Implementation details}
+
+
+\section{Conclusions}
+
+\section{Bibliography}
+
+\begin{itemize}  
+\item \href{https://profs.info.uaic.ro/~computernetworks/index.php}{Computer Networks}
+\item Stack Overflow
+\ldots 
+\end{itemize}
+\end{document}
