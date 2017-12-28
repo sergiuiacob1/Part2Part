@@ -47,8 +47,7 @@ void Server::Listen()
         printf("[server]Asteptam la portul %d...\n", PORT);
         fflush(stdout);
 
-        //client= malloc(sizeof(int));
-
+        //blocant
         if ((client = accept(sd, (struct sockaddr *)&from, &length)) < 0)
         {
             perror("[server]Eroare la accept().\n");
@@ -75,10 +74,10 @@ static void *treat(void *arg)
     pthread_detach(pthread_self());
     raspunde((struct thData *)arg);
     /* am terminat cu acest client, inchidem conexiunea */
-    close((intptr_t)arg);
+    close(tdL.cl);//(intptr_t)arg
     return (NULL);
 }
-
+    
 void raspunde(void *arg)
 {
     int nr, i = 0;

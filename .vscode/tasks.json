@@ -4,11 +4,23 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "part2part",
+            "label": "part2part-server",
             "type": "shell",
             "command": "g++",
             "args": [
-                "-pthread main.cpp server/server.cpp"
+                "-pthread server/*.cpp -o server.out"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "part2part-client",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-pthread client/*.cpp -o client.out"
             ],
             "group": {
                 "kind": "build",

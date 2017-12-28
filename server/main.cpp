@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <pthread.h>
-#include "./server/server.h"
+#include "./server.h"
 
 using namespace std;
 

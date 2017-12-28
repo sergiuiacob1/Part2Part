@@ -12,7 +12,7 @@
 #include <pthread.h>
 
 #define MAX_CLIENTS 1000
-#define PORT 2098
+#define PORT 1234
 
 typedef struct thData
 {
