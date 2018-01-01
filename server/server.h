@@ -9,31 +9,36 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <pthread.h>
+#include <arpa/inet.h>
+#include <string>
+#include <thread>
+#include <vector>
+#include <list>
+#include "./../client/client.h"
 
-#define MAX_CLIENTS 1000
 #define PORT 1234
 
-typedef struct thData
-{
-    int cl;       //descriptorul intors de accept
-    int idThread; //id-ul thread-ului tinut in evidenta de acest program
-} thData;
+using namespace std;
 
 extern int errno;
 
 class Server
 {
-  private:
-    int sd;
+private:
+  int sd;
+  struct sockaddr_in server;
+  struct sockaddr_in from;
 
-    struct sockaddr_in server;
-    struct sockaddr_in from;
-    pthread_t threads[MAX_CLIENTS];
+  list<Client> clients;
 
-  public:
-    bool Create();
-    void Listen();
+  void ProcessNewConnection(int);
+  void CreateClientThread();
+  static void ListenToClient(Client *);
+
+public:
+  bool Create();
+  void Listen();
+  int GetNrOfConnectedClients() { return clients.size(); }
 };
 
 #endif

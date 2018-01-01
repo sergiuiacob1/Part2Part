@@ -1,8 +1,5 @@
 #include "./server.h"
 
-void raspunde(void *);
-static void *treat (void *);
-
 bool Server::Create()
 {
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -31,7 +28,6 @@ bool Server::Create()
 
 void Server::Listen()
 {
-    int i = 0;
     if (listen(sd, 2) == -1)
     {
         perror("[server]Eroare la listen().\n");
@@ -40,67 +36,56 @@ void Server::Listen()
 
     while (1)
     {
-        int client;
-        thData *td;
+        int clDescriptor;
         socklen_t length = sizeof(from);
 
         printf("[server]Asteptam la portul %d...\n", PORT);
         fflush(stdout);
 
         //blocant
-        if ((client = accept(sd, (struct sockaddr *)&from, &length)) < 0)
+        if ((clDescriptor = accept(sd, (struct sockaddr *)&from, &length)) < 0)
         {
             perror("[server]Eroare la accept().\n");
             continue;
         }
 
-        int idThread;
-        int cl;
-
-        td = (struct thData *)malloc(sizeof(struct thData));
-        td->idThread = i++;
-        td->cl = client;
-
-        pthread_create(&threads[i], NULL, &treat, td);
+        ProcessNewConnection(clDescriptor);
+        printf("Server: %d\n", clients.back().clDescriptor);
     }
 }
 
-static void *treat(void *arg)
+void Server::ProcessNewConnection(int clDescriptor)
 {
-    struct thData tdL;
+    Client newClient(clDescriptor);
+    clients.push_back(newClient);
+
+    thread newThread(ListenToClient, &(clients.back()));
+    newThread.detach();
+}
+
+void Server::ListenToClient(Client *client)
+{
+    
+}
+
+//void *Server::treat(void *arg)
+//{
+/*struct thData tdL;
     tdL = *((struct thData *)arg);
+
     printf("[thread]- %d - Asteptam mesajul...\n", tdL.idThread);
     fflush(stdout);
     pthread_detach(pthread_self());
-    raspunde((struct thData *)arg);
-    /* am terminat cu acest client, inchidem conexiunea */
-    close(tdL.cl);//(intptr_t)arg
+
+    if (AddNewClient(tdL.cl) == false)
+    {
+        close(tdL.cl);
+        return (NULL);
+    }
+
+    ListenToClient((struct thData *)arg);
+
+    close(tdL.cl); //(intptr_t)arg
     return (NULL);
-}
-    
-void raspunde(void *arg)
-{
-    int nr, i = 0;
-    struct thData tdL;
-    tdL = *((struct thData *)arg);
-    if (read(tdL.cl, &nr, sizeof(int)) <= 0)
-    {
-        printf("[Thread %d]\n", tdL.idThread);
-        perror("Eroare la read() de la client.\n");
-    }
-
-    printf("[Thread %d]Mesajul a fost receptionat...%d\n", tdL.idThread, nr);
-
-    /*pregatim mesajul de raspuns */
-    nr++;
-    printf("[Thread %d]Trimitem mesajul inapoi...%d\n", tdL.idThread, nr);
-
-    /* returnam mesajul clientului */
-    if (write(tdL.cl, &nr, sizeof(int)) <= 0)
-    {
-        printf("[Thread %d] ", tdL.idThread);
-        perror("[Thread]Eroare la write() catre client.\n");
-    }
-    else
-        printf("[Thread %d]Mesajul a fost trasmis cu succes.\n", tdL.idThread);
-}
+    */
+//}
