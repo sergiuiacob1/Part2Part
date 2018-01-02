@@ -15,6 +15,7 @@
 #include <vector>
 #include <list>
 #include <mutex>
+#include <fstream>
 #include "./user.h"
 #include "./../shared/file.h"
 #include "./../shared/utils.h"
@@ -33,11 +34,14 @@ private:
   struct sockaddr_in from;
 
   list<User> users;
+  list<string> availableNames;
 
+  void BuildAvailableNames();
   void ProcessNewConnection(int);
   static void ListenToUser(Server *, User *);
   void SendAvailableFiles(User *);
   void AddFileToServer(User *);
+  void DownloadFileRequest();
 
 public:
   ~Server() { close(sd); }
@@ -45,6 +49,8 @@ public:
   void Listen();
   int GetNrOfConnectedUsers() { return users.size(); }
   void ProcessRequest(User *, string);
+  bool SendNameToUser(User *);
+  void AddUserName(string name) { availableNames.push_back(name); }
 };
 
 #endif

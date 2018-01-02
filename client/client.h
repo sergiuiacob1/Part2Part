@@ -14,6 +14,7 @@
 #include <string>
 #include <thread>
 #include <iostream>
+#include <set>
 #include "./../shared/file.h"
 #include "./../shared/utils.h"
 #define MAX_COMMAND_SIZE 1024
@@ -27,12 +28,16 @@ class Client
 private:
   int sd;
   struct sockaddr_in server;
+  set <string> addedFiles;
+  string name;
 
   void AddFile();
   void ProcessCommand(string);
   void ShowAvailableFiles();
   void DownloadFile();
   bool SendFileToServer(File);
+  bool GetClientNameFromServer();
+  FileStatus DownloadFileFromServer(File);
 
 public:
   bool ConnectToServer(char *, char *);

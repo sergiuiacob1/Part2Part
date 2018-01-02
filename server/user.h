@@ -23,7 +23,7 @@ class User
 {
 private:
   int usrDescriptor;
-  string address, name;
+  string name, dwnldPort, dwnldAddress;
   vector<File> userFiles;
 
 public:
@@ -32,10 +32,14 @@ public:
     usrDescriptor = _descriptor;
     userFiles.clear();
   }
-  string GetAddress() { return address; }
+  string GetName() { return name; }
+  string GetDwnldAddress() { return dwnldAddress; }
+  string GetDwnldPort() { return dwnldPort; }
   int GetUsrDescriptor() { return usrDescriptor; }
   void AddUserFile(File);
   vector<File> GetFiles() { return userFiles; }
+
+  void SetName(string _newName) { name = _newName; }
 };
 
 #endif

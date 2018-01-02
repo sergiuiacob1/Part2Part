@@ -2,6 +2,8 @@
 
 void ParseRequest(string &);
 
+mutex userNameChange;
+
 bool Server::Create()
 {
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -25,7 +27,21 @@ bool Server::Create()
         return false;
     }
 
+    BuildAvailableNames();
+
     return true;
+}
+
+void Server::BuildAvailableNames()
+{
+    string name;
+    ifstream fin("./server/usernames.txt");
+    while (1)
+    {
+        fin >> name;
+        if (fin.eof()) break;
+        availableNames.push_back(name);
+    }
 }
 
 void Server::Listen()
@@ -71,6 +87,9 @@ void Server::ListenToUser(Server *server, User *user)
     int lgRequest, lgRead;
     int sd = user->GetUsrDescriptor();
 
+    if (server->SendNameToUser(user) == false)
+        return;
+
     while (1)
     {
         request = ReadMessageInString(sd);
@@ -78,12 +97,29 @@ void Server::ListenToUser(Server *server, User *user)
         if (request.size() == 0)
         {
             cout << "Client disconnected\n";
+            server->AddUserName(user->GetName());
             return;
         }
 
         printf("Received request %s\n", request.data());
         server->ProcessRequest(user, request);
     }
+}
+
+bool Server::SendNameToUser(User *user)
+{
+    string clientName = availableNames.back();
+    availableNames.pop_back();
+
+    if (!WriteMessage(user->GetUsrDescriptor(), clientName.c_str()))
+    {
+        cout << "removing name: " << clientName << '\n';
+        availableNames.push_back(clientName);
+        return false;
+    }
+
+    user->SetName(clientName);
+    return true;
 }
 
 void Server::ProcessRequest(User *user, string request)
@@ -94,6 +130,13 @@ void Server::ProcessRequest(User *user, string request)
 
     if (request == "add file")
         AddFileToServer(user);
+
+    if (request == "download file")
+        DownloadFileRequest();
+}
+
+void Server::DownloadFileRequest()
+{
 }
 
 void Server::AddFileToServer(User *user)

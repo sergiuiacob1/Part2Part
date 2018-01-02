@@ -27,6 +27,24 @@ bool Client::ConnectToServer(char *address, char *port)
         return false;
     }
 
+    if (GetClientNameFromServer() == false)
+    {
+        cout << "Could not acquire username from server\n";
+        return false;
+    }
+    else
+    {
+        cout << "Connected with username: " << name << '\n';
+    }
+
+    return true;
+}
+
+bool Client::GetClientNameFromServer()
+{
+    name = ReadMessageInString(sd);
+    if (name.size() == 0)
+        return false;
     return true;
 }
 
@@ -43,12 +61,25 @@ void Client::ListenToCommands()
     close(sd);
 }
 
+void ParseCommand(string &command)
+{
+    while (command.back() == ' ' || command.back() == '\t')
+        command.pop_back();
+}
+
+void ReadCommand(string &command)
+{
+    getline(cin, command);
+}
+
 void Client::ProcessCommand(string command)
 {
     if (command == "show files")
         ShowAvailableFiles();
     if (command == "add file")
         AddFile();
+    if (command == "download file")
+        DownloadFile();
 }
 
 void Client::AddFile()
@@ -68,6 +99,12 @@ void Client::AddFile()
         return;
     }
 
+    if (addedFiles.count(newFile.GetFileName()) > 0)
+    {
+        cout << "You cannot add multiple files with the same name!\n";
+        return;
+    }
+
     SendFileToServer(newFile);
 }
 
@@ -81,6 +118,7 @@ bool Client::SendFileToServer(File file)
         return false;
 
     cout << "Successfully added file\n";
+    addedFiles.insert(file.GetFileName());
 
     return true;
 }
@@ -111,13 +149,32 @@ string GetAvailableFiles(int sd)
     return response;
 }
 
-void ParseCommand(string &command)
+void Client::DownloadFile()
 {
-    while (command.back() == ' ' || command.back() == '\t')
-        command.pop_back();
+    string aux;
+    File fileDwnld;
+    FileStatus result;
+
+    ShowAvailableFiles();
+    cout << "Choose a file to download: ";
+    cin >> aux;
+
+    fileDwnld.SetFileName(aux);
+
+    if (WriteMessage(sd, "download file") == false)
+    {
+        cout << "Can't download from server\n";
+        return;
+    }
+
+    result = DownloadFileFromServer(fileDwnld);
+    switch (result)
+    {
+    case FileStatus::NOT_EXIST:
+        cout << "The file you want to download does not exist\n";
+    }
 }
 
-void ReadCommand(string &command)
+FileStatus Client::DownloadFileFromServer(File file)
 {
-    getline(cin, command);
 }
