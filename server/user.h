@@ -12,27 +12,19 @@
 #include <arpa/inet.h>
 #include <string>
 #include <thread>
-#include <iostream>
-#include "./../shared/file.h"
-#include "./../shared/utils.h"
-#define MAX_COMMAND_SIZE 1024
 
 using namespace std;
 
-extern int errno;
-
-class Client
+class User
 {
 private:
-  int sd;
-  struct sockaddr_in server;
+  int usrDescriptor;
+  string address;
 
 public:
-  bool ConnectToServer(char *, char*);
-  void ListenToCommands();
-  void ProcessCommand(string);
-  void ShowAvailableFiles();
-  void DownloadFile();
+  User(int _descriptor) { usrDescriptor = _descriptor; }
+  string GetAddress() { return address; }
+  int GetUsrDescriptor() { return usrDescriptor; }
 };
 
 #endif

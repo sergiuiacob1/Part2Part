@@ -14,9 +14,13 @@
 #include <thread>
 #include <vector>
 #include <list>
-#include "./../client/client.h"
+#include <mutex>
+#include "./user.h"
+#include "./../shared/file.h"
+#include "./../shared/utils.h"
 
 #define PORT 1234
+#define MAX_READ_SIZE 1024
 
 using namespace std;
 
@@ -29,16 +33,17 @@ private:
   struct sockaddr_in server;
   struct sockaddr_in from;
 
-  list<Client> clients;
+  list<User> users;
 
   void ProcessNewConnection(int);
-  void CreateClientThread();
-  static void ListenToClient(Client *);
+  static void ListenToUser(Server *, User *);
+  void SendAvailableFiles(User *);
 
 public:
   bool Create();
   void Listen();
-  int GetNrOfConnectedClients() { return clients.size(); }
+  int GetNrOfConnectedUsers() { return users.size(); }
+  void ProcessRequest(User *, string);
 };
 
 #endif

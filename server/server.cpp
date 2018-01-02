@@ -1,5 +1,7 @@
 #include "./server.h"
 
+void ParseRequest(string &);
+
 bool Server::Create()
 {
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -36,56 +38,62 @@ void Server::Listen()
 
     while (1)
     {
-        int clDescriptor;
+        int usrDescriptor;
         socklen_t length = sizeof(from);
 
         printf("[server]Asteptam la portul %d...\n", PORT);
         fflush(stdout);
 
         //blocant
-        if ((clDescriptor = accept(sd, (struct sockaddr *)&from, &length)) < 0)
+        if ((usrDescriptor = accept(sd, (struct sockaddr *)&from, &length)) < 0)
         {
             perror("[server]Eroare la accept().\n");
             continue;
         }
 
-        ProcessNewConnection(clDescriptor);
-        printf("Server: %d\n", clients.back().clDescriptor);
+        ProcessNewConnection(usrDescriptor);
     }
 }
 
-void Server::ProcessNewConnection(int clDescriptor)
+void Server::ProcessNewConnection(int usrDescriptor)
 {
-    Client newClient(clDescriptor);
-    clients.push_back(newClient);
+    User newUser(usrDescriptor);
+    users.push_back(newUser);
 
-    thread newThread(ListenToClient, &(clients.back()));
+    thread newThread(ListenToUser, this, &(users.back()));
     newThread.detach();
 }
 
-void Server::ListenToClient(Client *client)
+void Server::ListenToUser(Server *server, User *user)
 {
-    
+    string request;
+    char *aux;
+    int lgRequest, lgRead;
+    int sd = user->GetUsrDescriptor();
+
+    while (1)
+    {
+        request = ReadMessageInString(sd);
+
+        printf("Received request %s\n", request.data());
+        server->ProcessRequest(user, request);
+    }
 }
 
-//void *Server::treat(void *arg)
-//{
-/*struct thData tdL;
-    tdL = *((struct thData *)arg);
+void Server::ProcessRequest(User *user, string request)
+{
+    ParseRequest(request);
+    if (request == "show files")
+        SendAvailableFiles(user);
+}
 
-    printf("[thread]- %d - Asteptam mesajul...\n", tdL.idThread);
-    fflush(stdout);
-    pthread_detach(pthread_self());
+void Server::SendAvailableFiles(User *user)
+{
+    //SendMessage (user->GetUsrDescriptor(), )
+}
 
-    if (AddNewClient(tdL.cl) == false)
-    {
-        close(tdL.cl);
-        return (NULL);
-    }
-
-    ListenToClient((struct thData *)arg);
-
-    close(tdL.cl); //(intptr_t)arg
-    return (NULL);
-    */
-//}
+void ParseRequest(string &request)
+{
+    while (request.back() == ' ' || request.back() == '\t')
+        request.pop_back();
+}
