@@ -75,6 +75,12 @@ void Server::ListenToUser(Server *server, User *user)
     {
         request = ReadMessageInString(sd);
 
+        if (request.size() == 0)
+        {
+            cout << "Client disconnected\n";
+            return;
+        }
+
         printf("Received request %s\n", request.data());
         server->ProcessRequest(user, request);
     }
@@ -85,11 +91,73 @@ void Server::ProcessRequest(User *user, string request)
     ParseRequest(request);
     if (request == "show files")
         SendAvailableFiles(user);
+
+    if (request == "add file")
+        AddFileToServer(user);
+}
+
+void Server::AddFileToServer(User *user)
+{
+    File newFile;
+    string fileName, fileSize;
+
+    fileName = ReadMessageInString(user->GetUsrDescriptor());
+    if (fileName.size() == 0)
+    {
+        printf("Failed to get file name");
+        return;
+    }
+
+    fileSize = ReadMessageInString(user->GetUsrDescriptor());
+    if (fileSize.size() == 0)
+    {
+        printf("Failed to get file size");
+        return;
+    }
+
+    newFile.SetFileName(fileName);
+    newFile.SetFileSize(atoi(fileSize.c_str()));
+
+    user->AddUserFile(newFile);
 }
 
 void Server::SendAvailableFiles(User *user)
 {
-    //SendMessage (user->GetUsrDescriptor(), )
+    int sd = user->GetUsrDescriptor(), totalFilesSize = 0;
+    char msg[1024]; /////////////////////////////////////////////////////////////////////////////////
+    vector<File> userFiles;
+
+    for (auto it : users)
+    {
+        userFiles = it.GetFiles();
+        for (auto file : userFiles)
+        {
+            totalFilesSize += file.GetFileSize();
+            ++totalFilesSize; //newline
+        }
+    }
+
+    if (WriteMessage(user->GetUsrDescriptor(), to_string(totalFilesSize).c_str()) == false)
+    {
+        printf("Couldn't send total file size to client\n");
+        return;
+    }
+
+    for (auto it : users)
+    {
+        userFiles = it.GetFiles();
+        for (auto file : userFiles)
+        {
+            strcpy (msg, file.GetFileName().c_str());
+            strcat (msg, "\n");
+            printf ("Sending to client: %s", msg);
+            if (WriteMessage(user->GetUsrDescriptor(), msg) == false)
+            {
+                printf("Couldn't send filename to client\n");
+                return;
+            }
+        }
+    }
 }
 
 void ParseRequest(string &request)

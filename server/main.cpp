@@ -21,6 +21,5 @@ int main()
         return -1;
 
     server.Listen();
-
     return 0;
 }

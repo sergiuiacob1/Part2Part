@@ -4,7 +4,7 @@ using namespace std;
 
 char *ReadMessageInChar(int sd)
 {
-    char *msg, aux[MAX_READ_SIZE];
+    char *msg, aux[MAX_READ_SIZE + 1];
     int lgMsg = -1, lgRead, lgAux = -1;
     if (read(sd, &lgMsg, 4) <= 0)
         return nullptr;
@@ -22,6 +22,7 @@ char *ReadMessageInChar(int sd)
             return msg;
         }
         lgRead += lgAux;
+        aux[lgAux] = 0;
         strcat(msg, aux);
     }
     msg[lgMsg] = 0;
@@ -32,7 +33,7 @@ char *ReadMessageInChar(int sd)
 string ReadMessageInString(int sd)
 {
     string request = "";
-    char aux[MAX_READ_SIZE];
+    char aux[MAX_READ_SIZE + 1];
     int lgRequest = -1, lgRead, lgAux = -1;
 
     if (read(sd, &lgRequest, 4) <= 0)
@@ -52,6 +53,7 @@ string ReadMessageInString(int sd)
             return "";
         }
         lgRead += lgAux;
+        aux[lgAux] = 0;
         request.append(aux);
     }
     request[lgRequest] = 0;
@@ -61,10 +63,28 @@ string ReadMessageInString(int sd)
 
 bool WriteMessage(int sd, const char *msg)
 {
-    int lgMsg = strlen(msg);
-    if (write(sd, &lgMsg, 4) == -1)
+    //if (DescriptorIsValid(sd) == false)
+    //return false;
+
+    int lgMsg = strlen(msg), lgWrite, lgAux = -1;
+    if (write(sd, &lgMsg, 4) <= 0)
         return false;
-    if (write(sd, msg, lgMsg) == -1)
-        return false;
+
+    lgWrite = 0;
+    while (lgWrite < lgMsg)
+    {
+        lgAux = write(sd, msg + lgWrite, MAX_WRITE_SIZE);
+        if (lgAux <= 0)
+        {
+            return false;
+        }
+        lgWrite += lgAux;
+    }
     return true;
+}
+
+bool DescriptorIsValid(int sd)
+{
+    errno = 0;
+    return (fcntl(sd, F_GETFD) != -1 || errno != EBADF);
 }

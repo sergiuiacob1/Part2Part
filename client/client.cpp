@@ -5,6 +5,7 @@ using namespace std;
 void ReadCommand(string &);
 void ParseCommand(string &);
 char *GetAvailableFiles(int);
+File GetFile();
 
 bool Client::ConnectToServer(char *address, char *port)
 {
@@ -35,7 +36,6 @@ void Client::ListenToCommands()
     while (1)
     {
         ReadCommand(command);
-        cout << "Am citit: " << command << '\n';
         ParseCommand(command);
         ProcessCommand(command);
     }
@@ -47,6 +47,42 @@ void Client::ProcessCommand(string command)
 {
     if (command == "show files")
         ShowAvailableFiles();
+    if (command == "add file")
+        AddFile();
+}
+
+void Client::AddFile()
+{
+    File newFile;
+    char fullPath[MAX_PATH_SIZE], relFilePath[MAX_FILE_PATH_SIZE];
+
+    cout << "Relative file path: ";
+    cin >> relFilePath;
+    getcwd(fullPath, MAX_PATH_SIZE);
+    strcat(fullPath, "/");
+    strcat(fullPath, relFilePath);
+
+    if (newFile.CreateFile(fullPath) != FileStatus::SUCCESS)
+    {
+        cout << "Could not add file\n";
+        return;
+    }
+
+    SendFileToServer(newFile);
+}
+
+bool Client::SendFileToServer(File file)
+{
+    if (WriteMessage(sd, "add file") == false)
+        return false;
+    if (WriteMessage(sd, file.GetFileName().c_str()) == false)
+        return false;
+    if (WriteMessage(sd, to_string (file.GetFileSize()).c_str()) == false)
+        return false;
+
+    cout << "Successfully added file\n";
+
+    return true;
 }
 
 void Client::ShowAvailableFiles()

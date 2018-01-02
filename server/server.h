@@ -20,7 +20,6 @@
 #include "./../shared/utils.h"
 
 #define PORT 1234
-#define MAX_READ_SIZE 1024
 
 using namespace std;
 
@@ -38,8 +37,10 @@ private:
   void ProcessNewConnection(int);
   static void ListenToUser(Server *, User *);
   void SendAvailableFiles(User *);
+  void AddFileToServer(User *);
 
 public:
+  ~Server() { close(sd); }
   bool Create();
   void Listen();
   int GetNrOfConnectedUsers() { return users.size(); }

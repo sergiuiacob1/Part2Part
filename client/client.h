@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <arpa/inet.h>
+#include <sys/stat.h>
 #include <string>
 #include <thread>
 #include <iostream>
@@ -27,12 +28,15 @@ private:
   int sd;
   struct sockaddr_in server;
 
-public:
-  bool ConnectToServer(char *, char*);
-  void ListenToCommands();
+  void AddFile();
   void ProcessCommand(string);
   void ShowAvailableFiles();
   void DownloadFile();
+  bool SendFileToServer(File);
+
+public:
+  bool ConnectToServer(char *, char *);
+  void ListenToCommands();
 };
 
 #endif
