@@ -2,6 +2,9 @@
 
 using namespace std;
 
-void User::AddUserFile (File file){
-    userFiles.push_back (file);
+void User::AddUserFile(File file)
+{
+    filesBeingChanged.lock();
+    userFiles.push_back(file);
+    filesBeingChanged.unlock();
 }

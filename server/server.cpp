@@ -127,37 +127,37 @@ void Server::SendAvailableFiles(User *user)
     char msg[1024]; /////////////////////////////////////////////////////////////////////////////////
     vector<File> userFiles;
 
-    for (auto it : users)
+    /* for (auto it : users)
     {
         userFiles = it.GetFiles();
         for (auto file : userFiles)
         {
-            totalFilesSize += file.GetFileSize();
+            totalFilesSize += file.GetFileName().size();
             ++totalFilesSize; //newline
         }
-    }
+    } */
 
-    if (WriteMessage(user->GetUsrDescriptor(), to_string(totalFilesSize).c_str()) == false)
-    {
-        printf("Couldn't send total file size to client\n");
-        return;
-    }
+    filesBeingChanged.lock();
 
     for (auto it : users)
     {
         userFiles = it.GetFiles();
         for (auto file : userFiles)
         {
-            strcpy (msg, file.GetFileName().c_str());
-            strcat (msg, "\n");
-            printf ("Sending to client: %s", msg);
+            strcpy(msg, file.GetFileName().c_str());
+            strcat(msg, "\n");
+            printf("Sending to client: %s", msg);
             if (WriteMessage(user->GetUsrDescriptor(), msg) == false)
             {
                 printf("Couldn't send filename to client\n");
+                filesBeingChanged.unlock();
                 return;
             }
         }
     }
+    filesBeingChanged.unlock();
+
+    WriteMessage(user->GetUsrDescriptor(), ""); //EOF
 }
 
 void ParseRequest(string &request)

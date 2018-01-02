@@ -6,11 +6,19 @@
 #include <unistd.h>
 #include <string>
 #include <cstring>
+#include <mutex>
 #include <iostream>
 #define MAX_PATH_SIZE 1024
 #define MAX_FILE_PATH_SIZE 256
 
 using namespace std;
+
+/* #ifndef FILES_BEING_CHANGED_MUTEX
+#define FILES_BEING_CHANGED_MUTEX
+  mutex filesBeingChanged;
+#endif */
+
+extern mutex filesBeingChanged;
 
 enum class FileStatus
 {

@@ -11,7 +11,7 @@ char *ReadMessageInChar(int sd)
     if (lgMsg <= 0)
         return nullptr;
 
-    msg = new char[lgMsg];
+    msg = new char[lgMsg + 1];
     lgRead = 0;
     while (lgRead < lgMsg)
     {
@@ -41,7 +41,7 @@ string ReadMessageInString(int sd)
     if (lgRequest <= 0)
         return "";
 
-    request.reserve(lgRequest);
+    request.reserve(lgRequest + 1);
     request.clear();
     lgRead = 0;
 

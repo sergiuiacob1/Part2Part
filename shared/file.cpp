@@ -1,5 +1,7 @@
 #include "./file.h"
 
+mutex filesBeingChanged;
+
 FileStatus File::CreateFile(char *filePath)
 {
     if (access(filePath, F_OK) == -1)

@@ -4,7 +4,7 @@ using namespace std;
 
 void ReadCommand(string &);
 void ParseCommand(string &);
-char *GetAvailableFiles(int);
+string GetAvailableFiles(int);
 File GetFile();
 
 bool Client::ConnectToServer(char *address, char *port)
@@ -77,7 +77,7 @@ bool Client::SendFileToServer(File file)
         return false;
     if (WriteMessage(sd, file.GetFileName().c_str()) == false)
         return false;
-    if (WriteMessage(sd, to_string (file.GetFileSize()).c_str()) == false)
+    if (WriteMessage(sd, to_string(file.GetFileSize()).c_str()) == false)
         return false;
 
     cout << "Successfully added file\n";
@@ -87,30 +87,27 @@ bool Client::SendFileToServer(File file)
 
 void Client::ShowAvailableFiles()
 {
-    char *availableFiles;
-    availableFiles = GetAvailableFiles(sd);
-    if (availableFiles == nullptr)
-    {
-        cout << "No files available\n";
-        return;
-    }
-
-    cout << "Available files:\n";
-    cout << availableFiles << '\n';
-    delete availableFiles; //clean up
-}
-
-char *GetAvailableFiles(int sd)
-{
-    char *response;
+    string availableFiles;
 
     if (WriteMessage(sd, "show files") == false)
     {
         perror("Can't write message to server: ");
-        return nullptr;
+        return;
     }
 
-    response = ReadMessageInChar(sd);
+    cout << "Available files:\n";
+    do
+    {
+        availableFiles = GetAvailableFiles(sd);
+        cout << availableFiles;
+    } while (availableFiles.size() > 0);
+    cout << '\n';
+}
+
+string GetAvailableFiles(int sd)
+{
+    string response = "";
+    response = ReadMessageInString(sd);
     return response;
 }
 

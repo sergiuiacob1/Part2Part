@@ -17,6 +17,8 @@
 
 using namespace std;
 
+extern mutex filesBeingChanged;
+
 class User
 {
 private:
