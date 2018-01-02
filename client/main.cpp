@@ -30,6 +30,12 @@ int main(int argc, char *argv[])
     return 0;
   }
 
+  if (client.CreatePeerServer() == false)
+  {
+    printf("Could not create peer server");
+    return 0;
+  }
+
   client.ListenToCommands();
 
   return 0;

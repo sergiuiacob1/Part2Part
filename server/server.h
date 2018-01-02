@@ -25,6 +25,7 @@
 using namespace std;
 
 extern int errno;
+extern mutex modifyUsersMutex;
 
 class Server
 {
@@ -41,16 +42,21 @@ private:
   static void ListenToUser(Server *, User *);
   void SendAvailableFiles(User *);
   void AddFileToServer(User *);
-  void DownloadFileRequest();
+  void DownloadFileRequest(User *);
+  void SendDwnldInfoToUser(User *, string, string);
+  User *FileExists(string, string);
+  bool AddPeer(User *);
 
 public:
   ~Server() { close(sd); }
   bool Create();
   void Listen();
   int GetNrOfConnectedUsers() { return users.size(); }
-  void ProcessRequest(User *, string);
+  bool ProcessRequest(User *, string);
   bool SendNameToUser(User *);
   void AddUserName(string name) { availableNames.push_back(name); }
+  bool GetDwnldInfo(User *);
+  void DisconnectUser(User *);
 };
 
 #endif

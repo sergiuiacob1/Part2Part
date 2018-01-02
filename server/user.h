@@ -40,6 +40,11 @@ public:
   vector<File> GetFiles() { return userFiles; }
 
   void SetName(string _newName) { name = _newName; }
+  void SetDwnldInfo(string _ip, string _port)
+  {
+    dwnldAddress = _ip;
+    dwnldPort = _port;
+  }
 };
 
 #endif

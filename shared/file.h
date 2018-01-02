@@ -24,7 +24,8 @@ enum class FileStatus
 {
   SUCCESS,
   NOT_EXIST,
-  STAT_ERROR
+  STAT_ERROR,
+  OTHER
 };
 
 class File

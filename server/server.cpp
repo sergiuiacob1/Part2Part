@@ -2,7 +2,7 @@
 
 void ParseRequest(string &);
 
-mutex userNameChange;
+mutex modifyUsersMutex;
 
 bool Server::Create()
 {
@@ -39,7 +39,8 @@ void Server::BuildAvailableNames()
     while (1)
     {
         fin >> name;
-        if (fin.eof()) break;
+        if (fin.eof())
+            break;
         availableNames.push_back(name);
     }
 }
@@ -48,22 +49,21 @@ void Server::Listen()
 {
     if (listen(sd, 2) == -1)
     {
-        perror("[server]Eroare la listen().\n");
+        perror("[server] Listen error");
         return;
     }
-
+    printf("[server]Waiting at port %d...\n", PORT);
     while (1)
     {
         int usrDescriptor;
         socklen_t length = sizeof(from);
 
-        printf("[server]Asteptam la portul %d...\n", PORT);
         fflush(stdout);
 
         //blocant
         if ((usrDescriptor = accept(sd, (struct sockaddr *)&from, &length)) < 0)
         {
-            perror("[server]Eroare la accept().\n");
+            perror("[server] Accept error");
             continue;
         }
 
@@ -73,8 +73,10 @@ void Server::Listen()
 
 void Server::ProcessNewConnection(int usrDescriptor)
 {
+    modifyUsersMutex.lock();
     User newUser(usrDescriptor);
     users.push_back(newUser);
+    modifyUsersMutex.unlock();
 
     thread newThread(ListenToUser, this, &(users.back()));
     newThread.detach();
@@ -93,17 +95,31 @@ void Server::ListenToUser(Server *server, User *user)
     while (1)
     {
         request = ReadMessageInString(sd);
-
         if (request.size() == 0)
-        {
-            cout << "Client disconnected\n";
-            server->AddUserName(user->GetName());
-            return;
-        }
+            break;
 
-        printf("Received request %s\n", request.data());
-        server->ProcessRequest(user, request);
+        printf("Received request %s from %s\n", request.data(), user->GetName().c_str());
+        if (server->ProcessRequest(user, request) == false)
+            break;
     }
+
+    server->DisconnectUser(user);
+}
+
+void Server::DisconnectUser(User *user)
+{
+    modifyUsersMutex.lock();
+
+    for (list<User>::iterator it = users.begin(); it != users.end(); it++)
+        if (it->GetName() == user->GetName())
+        {
+            users.erase(it);
+            break;
+        }
+    AddUserName(user->GetName());
+
+    cout << "Client disconnected\n";
+    modifyUsersMutex.unlock();
 }
 
 bool Server::SendNameToUser(User *user)
@@ -113,7 +129,6 @@ bool Server::SendNameToUser(User *user)
 
     if (!WriteMessage(user->GetUsrDescriptor(), clientName.c_str()))
     {
-        cout << "removing name: " << clientName << '\n';
         availableNames.push_back(clientName);
         return false;
     }
@@ -122,7 +137,7 @@ bool Server::SendNameToUser(User *user)
     return true;
 }
 
-void Server::ProcessRequest(User *user, string request)
+bool Server::ProcessRequest(User *user, string request)
 {
     ParseRequest(request);
     if (request == "show files")
@@ -132,11 +147,117 @@ void Server::ProcessRequest(User *user, string request)
         AddFileToServer(user);
 
     if (request == "download file")
-        DownloadFileRequest();
+        DownloadFileRequest(user);
+
+    if (request == "add peer")
+    {
+        if (AddPeer(user) == false)
+            return false;
+    }
+
+    return true;
 }
 
-void Server::DownloadFileRequest()
+bool Server::AddPeer(User *user)
 {
+    if (GetDwnldInfo(user) == false)
+    {
+        printf("Could not get ip and port from peer\n");
+        return false;
+    }
+
+    cout << "Peer " << user->GetName();
+    cout << " connected from " << user->GetDwnldAddress() << " at port " << user->GetDwnldPort() << '\n';
+    return true;
+}
+
+bool Server::GetDwnldInfo(User *user)
+{
+    string localIp, peerPort;
+    localIp = ReadMessageInString(user->GetUsrDescriptor());
+    if (localIp.size() == 0)
+        return false;
+
+    peerPort = ReadMessageInString(user->GetUsrDescriptor());
+    if (peerPort.size() == 0)
+        return false;
+
+    user->SetDwnldInfo(localIp, peerPort);
+    return true;
+}
+
+void Server::DownloadFileRequest(User *user)
+{
+    User *userOwningFile;
+    int sd = user->GetUsrDescriptor();
+    string fileName, userName;
+
+    fileName = ReadMessageInString(sd);
+    if (fileName.size() == 0)
+    {
+        cout << "Could not read file name from download request\n";
+        return;
+    }
+    userName = ReadMessageInString(sd);
+    if (userName.size() == 0)
+    {
+        cout << "Could not read user name from download request\n";
+        return;
+    }
+
+    userOwningFile = FileExists(fileName, userName);
+
+    if (userOwningFile != nullptr)
+    {
+        SendDwnldInfoToUser(user, userOwningFile->GetDwnldAddress(), userOwningFile->GetDwnldPort());
+    }
+    else
+    {
+        if (WriteMessage(sd, "NOT_EXIST") == false)
+            cout << "Failed to send NON_EXIST response to client\n";
+    }
+}
+
+void Server::SendDwnldInfoToUser(User *user, string address, string port)
+{
+    modifyUsersMutex.lock();
+    if (WriteMessage(user->GetUsrDescriptor(), address.c_str()) == false)
+    {
+        printf("Could not send download address to user\n");
+        return;
+    }
+
+    if (WriteMessage(user->GetUsrDescriptor(), port.c_str()) == false)
+    {
+        printf("Could not send download port to user\n");
+        return;
+    }
+
+    modifyUsersMutex.unlock();
+}
+
+User *Server::FileExists(string fileName, string userName)
+{
+    modifyUsersMutex.lock();
+    for (list<User>::iterator it = users.begin(); it != users.end(); it++)
+    {
+        if (it->GetName() == userName)
+        {
+            for (auto file : it->GetFiles())
+            {
+                if (file.GetFileName() == fileName)
+                {
+                    modifyUsersMutex.unlock();
+                    return &(*it);
+                }
+            }
+            modifyUsersMutex.unlock();
+            return nullptr;
+        }
+    }
+
+    modifyUsersMutex.unlock();
+    return nullptr;
 }
 
 void Server::AddFileToServer(User *user)
@@ -167,18 +288,8 @@ void Server::AddFileToServer(User *user)
 void Server::SendAvailableFiles(User *user)
 {
     int sd = user->GetUsrDescriptor(), totalFilesSize = 0;
-    char msg[1024]; /////////////////////////////////////////////////////////////////////////////////
+    char msg[MAX_PATH_SIZE + 256];
     vector<File> userFiles;
-
-    /* for (auto it : users)
-    {
-        userFiles = it.GetFiles();
-        for (auto file : userFiles)
-        {
-            totalFilesSize += file.GetFileName().size();
-            ++totalFilesSize; //newline
-        }
-    } */
 
     filesBeingChanged.lock();
 
@@ -187,12 +298,21 @@ void Server::SendAvailableFiles(User *user)
         userFiles = it.GetFiles();
         for (auto file : userFiles)
         {
-            strcpy(msg, file.GetFileName().c_str());
-            strcat(msg, "\n");
-            printf("Sending to client: %s", msg);
+            strcpy(msg, "File: ");
+            strcat(msg, file.GetFileName().c_str());
             if (WriteMessage(user->GetUsrDescriptor(), msg) == false)
             {
                 printf("Couldn't send filename to client\n");
+                filesBeingChanged.unlock();
+                return;
+            }
+
+            strcpy(msg, "---from user---");
+            strcat(msg, it.GetName().c_str());
+            strcat(msg, "\n");
+            if (WriteMessage(user->GetUsrDescriptor(), msg) == false)
+            {
+                printf("Couldn't send user name to client\n");
                 filesBeingChanged.unlock();
                 return;
             }
