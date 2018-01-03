@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <arpa/inet.h>
+#include <net/if.h>
+#include <netdb.h>
 #include <string>
 #include <thread>
 #include <vector>
@@ -21,6 +23,7 @@
 #include "./../shared/utils.h"
 
 #define PORT 1234
+#define MAX_CLIENTS 100
 
 using namespace std;
 

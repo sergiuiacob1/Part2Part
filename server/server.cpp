@@ -8,7 +8,7 @@ bool Server::Create()
 {
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        perror("[server]Eroare la socket().\n");
+        perror("[server]Socket error");
         return false;
     }
     int on = 1;
@@ -23,7 +23,7 @@ bool Server::Create()
 
     if (bind(sd, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1)
     {
-        perror("[server]Eroare la bind().\n");
+        perror("[server]Bind error");
         return false;
     }
 
@@ -47,7 +47,7 @@ void Server::BuildAvailableNames()
 
 void Server::Listen()
 {
-    if (listen(sd, 2) == -1)
+    if (listen(sd, MAX_CLIENTS) == -1)
     {
         perror("[server] Listen error");
         return;
