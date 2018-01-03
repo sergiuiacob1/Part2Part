@@ -15,6 +15,7 @@
 #include <string>
 #include <thread>
 #include <iostream>
+#include <fstream>
 #include <set>
 #include <list>
 #include "./../shared/file.h"
@@ -39,6 +40,7 @@ private:
   set<string> addedFiles;
   string name;
 
+  void ShowAvailableCommands();
   void AddFile();
   void ProcessCommand(string);
   bool ShowAvailableFiles();

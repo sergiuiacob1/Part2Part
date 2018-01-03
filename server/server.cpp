@@ -307,7 +307,16 @@ void Server::SendAvailableFiles(User *user)
                 return;
             }
 
-            strcpy(msg, "---from user---");
+            strcpy(msg, " ---size (B)--- ");
+            strcat(msg, to_string(file.GetFileSize()).c_str());
+            if (WriteMessage(user->GetUsrDescriptor(), msg) == false)
+            {
+                printf("Couldn't send user name to client\n");
+                filesBeingChanged.unlock();
+                return;
+            }
+
+            strcpy(msg, " ---from user--- ");
             strcat(msg, it.GetName().c_str());
             strcat(msg, "\n");
             if (WriteMessage(user->GetUsrDescriptor(), msg) == false)

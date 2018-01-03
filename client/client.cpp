@@ -19,24 +19,24 @@ bool Client::ConnectToServer(char *address, char *port)
 
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        perror("Eroare la socket().\n");
+        perror("[client]Socket error");
         return false;
     }
 
     if (connect(sd, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1)
     {
-        perror("[client]Eroare la connect().\n");
+        perror("[client]Connect error");
         return false;
     }
 
     if (GetClientNameFromServer() == false)
     {
-        cout << "Could not acquire username from server\n";
+        cout << "Could not acquire username from server\n\n";
         return false;
     }
     else
     {
-        cout << "Connected with username: " << name << '\n';
+        cout << "Connected with username: " << name << "\n";
     }
 
     return true;
@@ -84,9 +84,12 @@ bool Client::CreatePeerServer()
     if (SendPeerInfoToServer() == false)
         return false;
 
-    cout << "Created peer at address " << peerIp << " at port " << peerPort << '\n';
+    cout << "Created peer at address " << peerIp << " at port " << peerPort << "\n";
 
     CreatePeerListener();
+
+    sleep(1);
+    ShowAvailableCommands();
     return true;
 }
 
@@ -107,7 +110,8 @@ void Client::ListenToPeers(Client *client)
         return;
     }
 
-    printf("[server]Peer started listening at port %d...\n", PEER_PORT);
+    printf("[server]Peer started listening at port %d...\n\n", PEER_PORT);
+
     while (1)
     {
         int peerDescriptor;
@@ -142,7 +146,7 @@ void Client::ListenToConnectedPeer(Client *client, int peerDescriptor)
         request = ReadMessageInString(peerDescriptor);
         if (request.size() == 0)
         {
-            cout << "Peer disconnected from me\n";
+            cout << "Peer disconnected from me\n\n";
             break;
         }
 
@@ -166,8 +170,9 @@ bool Client::ProcessRequest(string request, int peerDescriptor)
 
 bool Client::SendFileToPeer(int peerDescriptor)
 {
+    ifstream fd;
     struct stat st;
-    int fd, fileSize;
+    int fileSize;
     string fileRequested;
     char filePath[MAX_FILE_PATH_SIZE];
 
@@ -184,11 +189,12 @@ bool Client::SendFileToPeer(int peerDescriptor)
             return false;
         }
 
-        fd = open(filePath, O_RDONLY);
-        if (fd == -1)
+        fd.open(filePath, ifstream::binary);
+
+        if (!fd)
         {
-            close(fd);
-            cout << "Can't open file " << filePath << '\n';
+            fd.close();
+            cout << "Can't open file " << filePath << "\n\n";
             return false;
         }
 
@@ -196,23 +202,16 @@ bool Client::SendFileToPeer(int peerDescriptor)
         stat(filePath, &st);
         fileSize = st.st_size;
 
-        if (WriteMessage(peerDescriptor, to_string(fileSize).c_str()) == false)
-        {
-            close(fd);
-            cout << "Couldn't send file size to peer requesting download\n";
-            return false;
-        }
-
         if (WriteFileInChunks(peerDescriptor, fd, fileSize) == false)
         {
-            close(fd);
+            fd.close();
             cout << "Couldn't send file to peer requesting download\n";
             return false;
         }
 
         cout << "File sent to peer requesting download\n";
 
-        close(fd);
+        fd.close();
     }
     else
     {
@@ -316,6 +315,17 @@ void Client::ListenToCommands()
     close(sd);
 }
 
+void Client::ShowAvailableCommands()
+{
+    cout << "Available commands:\n";
+    cout << "\t"
+         << "\033[1;31madd file\033[0m\n";
+    cout << "\t"
+         << "\033[1;31mshow files\033[0m\n";
+    cout << "\t"
+         << "\033[1;31mdownload file\033[0m\n";
+}
+
 void ParseCommand(string &command)
 {
     while (command.back() == ' ' || command.back() == '\t')
@@ -332,7 +342,7 @@ void Client::ProcessCommand(string command)
     if (command == "show files")
     {
         if (ShowAvailableFiles() == false)
-            cout << "No available files at this time\n";
+            cout << "No available files at this time\n\n";
     }
     if (command == "add file")
         AddFile();
@@ -375,7 +385,7 @@ bool Client::SendFileToServer(File file)
     if (WriteMessage(sd, to_string(file.GetFileSize()).c_str()) == false)
         return false;
 
-    cout << "Successfully added file\n";
+    cout << "Successfully added file\n\n";
     addedFiles.insert(file.GetFilePath());
     downloadableFiles.push_back(file);
 
@@ -393,7 +403,7 @@ bool Client::ShowAvailableFiles()
         return false;
     }
 
-    cout << "Available files:\n";
+    cout << "Available files for download:\n";
     do
     {
         availableFiles = GetAvailableFiles(sd);
@@ -421,7 +431,7 @@ void Client::DownloadFile()
 
     if (ShowAvailableFiles() == false)
     {
-        cout << "No files available for download\n";
+        cout << "No available files at this time\n\n";
         return;
     }
     cout << "Choose a file to download: ";
@@ -447,13 +457,13 @@ void Client::DownloadFile()
     switch (result)
     {
     case FileStatus::NOT_EXIST:
-        cout << "The file you want to download does not exist\n";
+        cout << "The file you want to download does not exist\n\n";
         break;
     case FileStatus::SUCCESS:
-        cout << "Successfully downloaded " << fileName << " from " << userName << '\n';
+        cout << "Successfully downloaded " << fileName << " from " << userName << "\n\n";
         break;
     case FileStatus::BAD_FILE_SIZE:
-        cout << "Received bad file size\n";
+        cout << "Received bad file size\n\n";
         break;
     }
 }
@@ -542,33 +552,36 @@ FileStatus Client::DownloadFileFromClient(string ipAddress, string userPort, str
 FileStatus Client::SaveFile(string fileName, int sdDownload)
 {
     string downloadedFileName, fileSize, auxStr;
-    int fd, lgRead, fileSizeInt;
+    int fd, lgRead, fileSizeInt, lastProcent, oldLgRead;
 
     downloadedFileName = "part2part-" + fileName;
     fd = open(downloadedFileName.c_str(), O_RDWR | O_CREAT, 0666);
 
-    cout << "Started downloading " << downloadedFileName << '\n';
+    cout << "Started downloading " << downloadedFileName << "\n\n";
 
-    fileSize = ReadMessageInString(sdDownload);
-    cout << "Primit file size " << fileSize << '\n';
-    if (fileSize.size() == 0)
-    {
-        cout << "file size is incorrect\n";
-        return FileStatus::BAD_FILE_SIZE;
-    }
+    if (read(sdDownload, &fileSizeInt, 4) < 0)
+        return FileStatus::DWNLD_ERROR;
 
-    lgRead = 0;
-    fileSizeInt = atoi(fileSize.c_str());
+    oldLgRead = lgRead = 0;
+    lastProcent = -1;
     while (lgRead < fileSizeInt)
     {
+        oldLgRead = lgRead;
         auxStr = ReadChunkMessageInString(sdDownload, lgRead, fileSizeInt);
-        if (auxStr.size() == 0)
+        if (lgRead == -1)
         {
             close(fd);
-            cout << "Download failed\n";
+            cout << "Download failed\n\n";
             return FileStatus::DWNLD_ERROR;
         }
-        write(fd, auxStr.c_str(), auxStr.size());
+
+        for (int i = 0; i < lgRead - oldLgRead; ++i)
+            write(fd, &auxStr[i], 1);
+        if ((int)(lgRead / 1.0f / fileSizeInt * 100) != lastProcent)
+        {
+            cout << "Downloaded " << (int)(lgRead / 1.0f / fileSizeInt * 100) << "%\n";
+            lastProcent = (int)(lgRead / 1.0f / fileSizeInt * 100);
+        }
     }
 
     close(fd);

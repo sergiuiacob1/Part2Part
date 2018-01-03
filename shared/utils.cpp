@@ -72,13 +72,16 @@ string ReadChunkMessageInString(int sd, int &lgReadTotal, int fileSize)
     else
         lgMsg = fileSize - lgReadTotal;
 
-    msg.reserve(lgMsg);
     msg.clear();
-
-    if (read(sd, aux, lgMsg) <= 0)
+    msg.reserve(lgMsg);
+    if (read(sd, aux, lgMsg) < 0)
+    {
+        lgReadTotal = -1;
         return "";
+    }
     aux[lgMsg] = 0;
-    msg.assign(aux);
+    for (int i = 0; i < lgMsg; ++i)
+        msg.push_back(aux[i]);
     msg[lgMsg] = 0;
     lgReadTotal += lgMsg;
 
@@ -107,28 +110,23 @@ bool WriteMessage(int sd, const char *msg)
     return true;
 }
 
-bool WriteFileInChunks(int peerDescriptor, int fd, int fileSize)
+bool WriteFileInChunks(int peerDescriptor, ifstream &fd, int fileSize)
 {
-    for (int i = 0; i < fileSize; ++i)
-    {
-        write(peerDescriptor, "a", 1);
-    }
-    return true;
     char auxRead[MAX_READ_SIZE + 1];
     int lgRead, lgAuxRead;
 
+    if (write(peerDescriptor, &fileSize, 4) < 0)
+        return false;
+
     lgRead = 0;
-    while (lgRead < fileSize)
+    while (!fd.eof())
     {
-        lgAuxRead = read(fd, auxRead, MAX_READ_SIZE);
-        if (lgAuxRead < 0)
-            return false;
+        fd.read(auxRead, MAX_WRITE_SIZE);
+        lgAuxRead = ((fd) ? MAX_WRITE_SIZE : fd.gcount());
         auxRead[lgAuxRead] = 0;
 
         if (write(peerDescriptor, auxRead, lgAuxRead) < 0)
-        {
             return false;
-        }
         lgRead += lgAuxRead;
     }
     return true;
