@@ -106,7 +106,7 @@ void Client::ListenToPeers(Client *client)
         perror("[server] Listen error");
         return;
     }
-    
+
     printf("[server]Peer started listening at port %d...\n", PEER_PORT);
     while (1)
     {
@@ -122,13 +122,121 @@ void Client::ListenToPeers(Client *client)
             continue;
         }
 
-        ProcessNewConnection(client, peerDescriptor);
+        //ProcessNewConnection(client, peerDescriptor);
+        thread threadPeerConnected(ListenToConnectedPeer, client, peerDescriptor);
+        threadPeerConnected.detach();
     }
 }
 
 void ProcessNewConnection(Client *client, int peerDescriptor)
 {
-    cout << "Somebody connected to me\n";
+    //thread threadPeerConnected(client->ListenToConnectedPeer, client, peerDescriptor);
+    //threadPeerConnected.detach();
+}
+
+void Client::ListenToConnectedPeer(Client *client, int peerDescriptor)
+{
+    string request;
+    while (1)
+    {
+        request = ReadMessageInString(peerDescriptor);
+        if (request.size() == 0)
+        {
+            cout << "Peer disconnected from me\n";
+            break;
+        }
+
+        cout << "Peer received " << request << " request\n";
+
+        if (client->ProcessRequest(request, peerDescriptor) == false)
+            break;
+    }
+}
+
+bool Client::ProcessRequest(string request, int peerDescriptor)
+{
+    if (request == "download file")
+    {
+        if (SendFileToPeer(peerDescriptor) == false)
+            return false;
+    }
+
+    return true;
+}
+
+bool Client::SendFileToPeer(int peerDescriptor)
+{
+    struct stat st;
+    int fd, fileSize;
+    string fileRequested;
+    char filePath[MAX_FILE_PATH_SIZE];
+
+    fileRequested = ReadMessageInString(peerDescriptor);
+    getcwd(filePath, MAX_PATH_SIZE);
+    strcat(filePath, "/");
+    strcat(filePath, fileRequested.c_str());
+
+    if (IHaveFile(fileRequested, filePath))
+    {
+        if (WriteMessage(peerDescriptor, "ok, you may download from me, cutie pie") == false)
+        {
+            cout << "Could not send response to peer requesting download\n";
+            return false;
+        }
+
+        fd = open(filePath, O_RDONLY);
+        if (fd == -1)
+        {
+            close(fd);
+            cout << "Can't open file " << filePath << '\n';
+            return false;
+        }
+
+        //send file size
+        stat(filePath, &st);
+        fileSize = st.st_size;
+
+        if (WriteMessage(peerDescriptor, to_string(fileSize).c_str()) == false)
+        {
+            close(fd);
+            cout << "Couldn't send file size to peer requesting download\n";
+            return false;
+        }
+
+        if (WriteFileInChunks(peerDescriptor, fd, fileSize) == false)
+        {
+            close(fd);
+            cout << "Couldn't send file to peer requesting download\n";
+            return false;
+        }
+
+        cout << "File sent to peer requesting download\n";
+
+        close(fd);
+    }
+    else
+    {
+        if (WriteMessage(peerDescriptor, "I do not have that file") == false)
+        {
+            cout << "Could not send response to peer requesting download\n";
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Client::IHaveFile(string fileName, char *filePath)
+{
+    for (auto it : downloadableFiles)
+    {
+        if (it.GetFileName() == fileName)
+        {
+            if (access(filePath, F_OK) != -1)
+                return true;
+        }
+    }
+    return false;
 }
 
 bool Client::SendPeerInfoToServer()
@@ -249,9 +357,9 @@ void Client::AddFile()
         return;
     }
 
-    if (addedFiles.count(newFile.GetFileName()) > 0)
+    if (addedFiles.count(newFile.GetFilePath()) > 0)
     {
-        cout << "You cannot add multiple files with the same name!\n";
+        cout << "You cannot add the same file multiple times!\n";
         return;
     }
 
@@ -268,7 +376,8 @@ bool Client::SendFileToServer(File file)
         return false;
 
     cout << "Successfully added file\n";
-    addedFiles.insert(file.GetFileName());
+    addedFiles.insert(file.GetFilePath());
+    downloadableFiles.push_back(file);
 
     return true;
 }
@@ -343,6 +452,9 @@ void Client::DownloadFile()
     case FileStatus::SUCCESS:
         cout << "Successfully downloaded " << fileName << " from " << userName << '\n';
         break;
+    case FileStatus::BAD_FILE_SIZE:
+        cout << "Received bad file size\n";
+        break;
     }
 }
 
@@ -386,9 +498,9 @@ FileStatus Client::GetFileFromServer(string fileName, string userName)
 
 FileStatus Client::DownloadFileFromClient(string ipAddress, string userPort, string fileName)
 {
+    string response;
     int sdDownload;
-    /* int fd = open("testzz.txt", O_RDWR | O_CREAT, 0666);
-    close(fd); */
+    FileStatus downloadResult;
 
     sdDownload = ConnectToPeerClient(ipAddress, userPort);
     if (sdDownload == -1)
@@ -397,7 +509,69 @@ FileStatus Client::DownloadFileFromClient(string ipAddress, string userPort, str
         return FileStatus::OTHER;
     }
 
+    if (WriteMessage(sdDownload, "download file") == false)
+    {
+        cout << "Could not sent request to peer\n";
+        return FileStatus::OTHER;
+    }
+
+    if (WriteMessage(sdDownload, fileName.c_str()) == false)
+    {
+        cout << "Could not send file name to peer\n";
+        return FileStatus::OTHER;
+    }
+
+    response = ReadMessageInString(sdDownload);
+    cout << "Received response from peer: " << response << '\n';
+    if (response.size() == 0)
+    {
+        cout << "Peer disconnected\n";
+        FileStatus::OTHER;
+    }
+
+    downloadResult = FileStatus::OTHER;
+    if (response == "ok, you may download from me, cutie pie")
+    {
+        downloadResult = SaveFile(fileName, sdDownload);
+    }
+
     close(sdDownload);
+    return downloadResult;
+}
+
+FileStatus Client::SaveFile(string fileName, int sdDownload)
+{
+    string downloadedFileName, fileSize, auxStr;
+    int fd, lgRead, fileSizeInt;
+
+    downloadedFileName = "part2part-" + fileName;
+    fd = open(downloadedFileName.c_str(), O_RDWR | O_CREAT, 0666);
+
+    cout << "Started downloading " << downloadedFileName << '\n';
+
+    fileSize = ReadMessageInString(sdDownload);
+    cout << "Primit file size " << fileSize << '\n';
+    if (fileSize.size() == 0)
+    {
+        cout << "file size is incorrect\n";
+        return FileStatus::BAD_FILE_SIZE;
+    }
+
+    lgRead = 0;
+    fileSizeInt = atoi(fileSize.c_str());
+    while (lgRead < fileSizeInt)
+    {
+        auxStr = ReadChunkMessageInString(sdDownload, lgRead, fileSizeInt);
+        if (auxStr.size() == 0)
+        {
+            close(fd);
+            cout << "Download failed\n";
+            return FileStatus::DWNLD_ERROR;
+        }
+        write(fd, auxStr.c_str(), auxStr.size());
+    }
+
+    close(fd);
     return FileStatus::SUCCESS;
 }
 
@@ -412,13 +586,13 @@ int Client::ConnectToPeerClient(string ipAddress, string userPort)
 
     if ((sdDownload = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        perror("Eroare la socket().\n");
+        perror("Socket error");
         return -1;
     }
 
     if (connect(sdDownload, (struct sockaddr *)&peerOwningFile, sizeof(struct sockaddr)) == -1)
     {
-        perror("[client]Eroare la connect().\n");
+        perror("[client]Connect error");
         return -1;
     }
 

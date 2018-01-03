@@ -25,18 +25,21 @@ enum class FileStatus
   SUCCESS,
   NOT_EXIST,
   STAT_ERROR,
-  OTHER
+  OTHER,
+  DWNLD_ERROR,
+  BAD_FILE_SIZE
 };
 
 class File
 {
-  string fileName;
+  string fileName, filePath;
   int fileSize;
   struct stat fileStat;
 
 public:
   FileStatus CreateFile(char *);
   string GetFileName() { return fileName; }
+  string GetFilePath() { return filePath; }
   int GetFileSize() { return fileSize; }
 
   void SetFileName(string _name) { fileName = _name; }

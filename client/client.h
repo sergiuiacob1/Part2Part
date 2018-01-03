@@ -35,7 +35,7 @@ private:
   struct sockaddr_in peerServer, peerFrom;
   string peerIp, peerPort;
 
-  list <File> downloadableFiles;
+  list<File> downloadableFiles;
   set<string> addedFiles;
   string name;
 
@@ -52,6 +52,9 @@ private:
   int ConnectToPeerClient(string, string);
   void CreatePeerListener();
   static void ListenToPeers(Client *);
+  FileStatus SaveFile(string, int);
+  bool SendFileToPeer(int);
+  bool IHaveFile(string, char *);
 
 public:
   bool ConnectToServer(char *, char *);
@@ -59,6 +62,8 @@ public:
   void ListenToCommands();
   int GetSdPeer() { return sdPeer; }
   struct sockaddr_in GetPeerFrom() { return peerFrom; }
+  static void ListenToConnectedPeer(Client *, int);
+  bool ProcessRequest(string, int);
 };
 
 #endif

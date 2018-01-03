@@ -61,6 +61,30 @@ string ReadMessageInString(int sd)
     return request;
 }
 
+string ReadChunkMessageInString(int sd, int &lgReadTotal, int fileSize)
+{
+    string msg = "";
+    char aux[MAX_READ_SIZE + 1];
+    int lgMsg;
+
+    if (MAX_READ_SIZE < (fileSize - lgReadTotal))
+        lgMsg = MAX_READ_SIZE;
+    else
+        lgMsg = fileSize - lgReadTotal;
+
+    msg.reserve(lgMsg);
+    msg.clear();
+
+    if (read(sd, aux, lgMsg) <= 0)
+        return "";
+    aux[lgMsg] = 0;
+    msg.assign(aux);
+    msg[lgMsg] = 0;
+    lgReadTotal += lgMsg;
+
+    return msg;
+}
+
 bool WriteMessage(int sd, const char *msg)
 {
     //if (DescriptorIsValid(sd) == false)
@@ -79,6 +103,33 @@ bool WriteMessage(int sd, const char *msg)
             return false;
         }
         lgWrite += lgAux;
+    }
+    return true;
+}
+
+bool WriteFileInChunks(int peerDescriptor, int fd, int fileSize)
+{
+    for (int i = 0; i < fileSize; ++i)
+    {
+        write(peerDescriptor, "a", 1);
+    }
+    return true;
+    char auxRead[MAX_READ_SIZE + 1];
+    int lgRead, lgAuxRead;
+
+    lgRead = 0;
+    while (lgRead < fileSize)
+    {
+        lgAuxRead = read(fd, auxRead, MAX_READ_SIZE);
+        if (lgAuxRead < 0)
+            return false;
+        auxRead[lgAuxRead] = 0;
+
+        if (write(peerDescriptor, auxRead, lgAuxRead) < 0)
+        {
+            return false;
+        }
+        lgRead += lgAuxRead;
     }
     return true;
 }

@@ -11,7 +11,9 @@
 extern int errno;
 
 char *ReadMessageInChar(int);
-std::string ReadMessageInString (int);
+std::string ReadMessageInString(int);
+std::string ReadChunkMessageInString(int, int &, int);
 
-bool WriteMessage (int, const char*);
-bool DescriptorIsValid (int);
+bool WriteMessage(int, const char *);
+bool WriteFileInChunks (int, int, int);
+bool DescriptorIsValid(int);

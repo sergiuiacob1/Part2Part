@@ -2,17 +2,18 @@
 
 mutex filesBeingChanged;
 
-FileStatus File::CreateFile(char *filePath)
+FileStatus File::CreateFile(char *_filePath)
 {
-    if (access(filePath, F_OK) == -1)
+    if (access(_filePath, F_OK) == -1)
     {
         return FileStatus::NOT_EXIST;
     }
 
-    if (stat(filePath, &fileStat) == -1)
+    if (stat(_filePath, &fileStat) == -1)
         return FileStatus::STAT_ERROR;
 
-    fileName.assign(strrchr(filePath, '/') + 1);
+    fileName.assign(strrchr(_filePath, '/') + 1);
+    filePath.assign (_filePath);
     fileSize = (int)fileStat.st_size;
 
     return FileStatus::SUCCESS;
