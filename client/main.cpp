@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
   if (client.CreatePeerServer() == false)
   {
-    printf("Could not create peer server");
+    printf("Could not create peer server\n");
     return 0;
   }
 

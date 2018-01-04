@@ -11,9 +11,29 @@ void ProcessNewConnection(Client *, int);
 
 bool Client::ConnectToServer(char *address, char *port)
 {
+    struct sockaddr_in6 server;
     int portVal = atoi(port);
+    server.sin6_family = AF_INET6;
+    if (inet_pton(AF_INET6, address, &server.sin6_addr) <= 0)
+    {
+        perror("inet_pton() error");
+        return false;
+    }
+    server.sin6_port = htons(portVal);
 
-    server.sin_family = AF_INET;
+    if ((sd = socket(AF_INET6, SOCK_STREAM, 0)) == -1)
+    {
+        perror("[client]Socket error");
+        return false;
+    }
+
+    if (connect(sd, (struct sockaddr *)&server, sizeof(server)) == -1)
+    {
+        perror("[client]Connect error");
+        return false;
+    }
+
+    /*server.sin_family = AF_INET;
     server.sin_addr.s_addr = inet_addr(address);
     server.sin_port = htons(portVal);
 
@@ -27,7 +47,7 @@ bool Client::ConnectToServer(char *address, char *port)
     {
         perror("[client]Connect error");
         return false;
-    }
+    }*/
 
     if (GetClientNameFromServer() == false)
     {
@@ -45,7 +65,36 @@ bool Client::ConnectToServer(char *address, char *port)
 bool Client::CreatePeerServer()
 {
     bool connectedSuccessfully;
-    if ((sdPeer = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+
+    struct sockaddr_in6 serv_addr;
+    sdPeer = socket(AF_INET6, SOCK_STREAM, 0);
+    if (sdPeer < 0)
+    {
+        perror("ERROR opening socket");
+        return false;
+    }
+    int on = 1;
+    setsockopt(sdPeer, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on));
+
+    bzero((char *)&serv_addr, sizeof(serv_addr));
+    serv_addr.sin6_flowinfo = 0;
+    serv_addr.sin6_family = AF_INET6;
+    serv_addr.sin6_addr = in6addr_any;
+
+    PEER_PORT = 9909;
+    connectedSuccessfully = false;
+    for (int i = 0; i < 1000; ++i)
+    {
+        serv_addr.sin6_port = htons(PEER_PORT);
+        if (bind(sdPeer, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != -1)
+        {
+            connectedSuccessfully = true;
+            break;
+        }
+        ++PEER_PORT;
+    }
+
+    /*if ((sdPeer = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         perror("[peer server] Socket error\n");
         return false;
@@ -70,11 +119,11 @@ bool Client::CreatePeerServer()
             break;
         }
         ++PEER_PORT;
-    }
+    }*/
 
     if (!connectedSuccessfully)
     {
-        perror("[peer server]Bind error\n");
+        perror("[peer server]Bind error");
         return false;
     }
 
@@ -103,7 +152,9 @@ void Client::ListenToPeers(Client *client)
 {
     //create peer server part
     int sdPeer = client->GetSdPeer();
-    struct sockaddr_in peerFrom = client->GetPeerFrom();
+    //struct sockaddr_in peerFrom = client->GetPeerFrom();
+    struct sockaddr_in6 peerFrom;
+    bzero(&peerFrom, sizeof(peerFrom));
     if (listen(sdPeer, 2) == -1)
     {
         perror("[server] Listen error");
@@ -265,7 +316,7 @@ bool Client::SetAddressForPeerServer()
     struct ifaddrs *ifAddrStruct = NULL;
     struct ifaddrs *ifa = NULL;
     void *tmpAddrPtr = NULL;
-    char auxIp[INET_ADDRSTRLEN];
+    char auxIp[INET6_ADDRSTRLEN];
 
     getifaddrs(&ifAddrStruct);
 
@@ -273,11 +324,12 @@ bool Client::SetAddressForPeerServer()
     {
         if (!ifa->ifa_addr)
             continue;
-        if (ifa->ifa_addr->sa_family == AF_INET)
+        if (ifa->ifa_addr->sa_family == AF_INET6) //ipv6
         {
-            tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
-            inet_ntop(AF_INET, tmpAddrPtr, auxIp, INET_ADDRSTRLEN);
-            if (strstr(auxIp, "192.168.") != NULL)
+            tmpAddrPtr = &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
+            inet_ntop(AF_INET6, tmpAddrPtr, auxIp, INET6_ADDRSTRLEN);
+            //if (strstr(auxIp, "192.168.") != NULL)
+            if (strlen(auxIp) == 38)
             {
                 peerIp.assign(auxIp);
                 break;
@@ -590,20 +642,25 @@ FileStatus Client::SaveFile(string fileName, int sdDownload)
 
 int Client::ConnectToPeerClient(string ipAddress, string userPort)
 {
-    struct sockaddr_in peerOwningFile;
+    struct sockaddr_in6 peerOwningFile;
     int sdDownload;
 
-    peerOwningFile.sin_family = AF_INET;
-    peerOwningFile.sin_addr.s_addr = inet_addr(ipAddress.c_str());
-    peerOwningFile.sin_port = htons(atoi(userPort.c_str()));
+    peerOwningFile.sin6_family = AF_INET6;
+    //peerOwningFile.sin_addr.s_addr = inet_addr(ipAddress.c_str());
+    if (inet_pton(AF_INET6, ipAddress.c_str(), &peerOwningFile.sin6_addr) < 0)
+    {
+        perror("inet_pton() error");
+        return false;
+    }
+    peerOwningFile.sin6_port = htons(atoi(userPort.c_str()));
 
-    if ((sdDownload = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if ((sdDownload = socket(AF_INET6, SOCK_STREAM, 0)) == -1)
     {
         perror("Socket error");
         return -1;
     }
 
-    if (connect(sdDownload, (struct sockaddr *)&peerOwningFile, sizeof(struct sockaddr)) == -1)
+    if (connect(sdDownload, (struct sockaddr *)&peerOwningFile, sizeof(peerOwningFile)) == -1)
     {
         perror("[client]Connect error");
         return -1;

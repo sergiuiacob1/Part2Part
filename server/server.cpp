@@ -6,6 +6,31 @@ mutex modifyUsersMutex;
 
 bool Server::Create()
 {
+    //ipv6
+    struct sockaddr_in6 serv_addr;
+    sd = socket(AF_INET6, SOCK_STREAM, 0);
+    if (sd < 0)
+    {
+        perror("ERROR opening socket");
+        return false;
+    }
+    int on = 1;
+    setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+
+    bzero((char *)&serv_addr, sizeof(serv_addr));
+    memset(&from, 0, sizeof(from));
+
+    serv_addr.sin6_flowinfo = 0;
+    serv_addr.sin6_family = AF_INET6;
+    serv_addr.sin6_addr = in6addr_any;
+    serv_addr.sin6_port = htons(PORT);
+    if (bind(sd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        perror("ERROR on binding");
+        return false;
+    }
+
+    /*
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         perror("[server]Socket error");
@@ -26,7 +51,7 @@ bool Server::Create()
         perror("[server]Bind error");
         return false;
     }
-
+*/
     BuildAvailableNames();
 
     return true;
