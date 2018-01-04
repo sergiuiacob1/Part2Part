@@ -22,6 +22,7 @@ bool Server::Create()
 
     serv_addr.sin6_flowinfo = 0;
     serv_addr.sin6_family = AF_INET6;
+    //inet_pton(AF_INET6, "2a02:2f0e:52a0:446:b2d0:8fb5:c3d5:bdf5", &serv_addr.sin6_addr);
     serv_addr.sin6_addr = in6addr_any;
     serv_addr.sin6_port = htons(PORT);
     if (bind(sd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)

@@ -21,6 +21,7 @@
 #include "./../shared/file.h"
 #include "./../shared/utils.h"
 #define MAX_COMMAND_SIZE 1024
+#define MAX_PEERS 100
 
 using namespace std;
 

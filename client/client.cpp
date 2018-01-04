@@ -155,7 +155,7 @@ void Client::ListenToPeers(Client *client)
     //struct sockaddr_in peerFrom = client->GetPeerFrom();
     struct sockaddr_in6 peerFrom;
     bzero(&peerFrom, sizeof(peerFrom));
-    if (listen(sdPeer, 2) == -1)
+    if (listen(sdPeer, MAX_PEERS) == -1)
     {
         perror("[server] Listen error");
         return;
@@ -400,6 +400,12 @@ void Client::ProcessCommand(string command)
         AddFile();
     if (command == "download file")
         DownloadFile();
+
+    if (command == "exit"){
+        close (sd);
+        close (sdPeer);
+        exit(0);
+    }
 }
 
 void Client::AddFile()
