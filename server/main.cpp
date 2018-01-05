@@ -16,7 +16,16 @@ extern int errno;
 
 int main()
 {
+    string ipMode;
     Server server;
+    do
+    {
+        cout << "Enter the ipMode you want to use: ipv4/ipv6: ";
+        cin >> ipMode;
+        cout << "\n";
+    } while (ipMode != "ipv4" && ipMode != "ipv6");
+
+    server.SetIpMode(ipMode);
     if (!server.Create())
         return -1;
 

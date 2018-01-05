@@ -6,53 +6,60 @@ mutex modifyUsersMutex;
 
 bool Server::Create()
 {
-    //ipv6
     struct sockaddr_in6 serv_addr;
-    sd = socket(AF_INET6, SOCK_STREAM, 0);
-    if (sd < 0)
+    struct sockaddr_in server;
+
+    bzero(&serv_addr, sizeof(serv_addr));
+    bzero(&server, sizeof(server));
+
+    if (ipMode == "ipv6")
     {
-        perror("ERROR opening socket");
-        return false;
+        sd = socket(AF_INET6, SOCK_STREAM, 0);
+        if (sd < 0)
+        {
+            perror("ERROR opening socket");
+            return false;
+        }
+        int on = 1;
+        setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+
+        bzero((char *)&serv_addr, sizeof(serv_addr));
+        //memset(&from, 0, sizeof(from));
+
+        serv_addr.sin6_flowinfo = 0;
+        serv_addr.sin6_family = AF_INET6;
+        serv_addr.sin6_addr = in6addr_any;
+        serv_addr.sin6_port = htons(PORT);
+        if (bind(sd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        {
+            perror("ERROR on binding");
+            return false;
+        }
     }
-    int on = 1;
-    setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 
-    bzero((char *)&serv_addr, sizeof(serv_addr));
-    memset(&from, 0, sizeof(from));
-
-    serv_addr.sin6_flowinfo = 0;
-    serv_addr.sin6_family = AF_INET6;
-    //inet_pton(AF_INET6, "2a02:2f0e:52a0:446:b2d0:8fb5:c3d5:bdf5", &serv_addr.sin6_addr);
-    serv_addr.sin6_addr = in6addr_any;
-    serv_addr.sin6_port = htons(PORT);
-    if (bind(sd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    if (ipMode == "ipv4")
     {
-        perror("ERROR on binding");
-        return false;
+        if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+        {
+            perror("[server]Socket error");
+            return false;
+        }
+        int on = 1;
+        setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+
+        memset(&server, 0, sizeof(server));
+        //memset(&from, 0, sizeof(from));
+
+        server.sin_family = AF_INET;
+        server.sin_addr.s_addr = htonl(INADDR_ANY);
+        server.sin_port = htons(PORT);
+
+        if (bind(sd, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1)
+        {
+            perror("[server]Bind error");
+            return false;
+        }
     }
-
-    /*
-    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-    {
-        perror("[server]Socket error");
-        return false;
-    }
-    int on = 1;
-    setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
-
-    memset(&server, 0, sizeof(server));
-    memset(&from, 0, sizeof(from));
-
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = htonl(INADDR_ANY);
-    server.sin_port = htons(PORT);
-
-    if (bind(sd, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1)
-    {
-        perror("[server]Bind error");
-        return false;
-    }
-*/
     BuildAvailableNames();
 
     return true;
@@ -73,24 +80,47 @@ void Server::BuildAvailableNames()
 
 void Server::Listen()
 {
+    struct sockaddr_in from4;
+    struct sockaddr_in6 from6;
+    socklen_t length;
+
+    bzero(&from4, sizeof(from4));
+    bzero(&from6, sizeof(from6));
+
+    if (ipMode == "ipv4")
+        length = sizeof(from4);
+    else
+        length = sizeof(from6);
+
     if (listen(sd, MAX_CLIENTS) == -1)
     {
         perror("[server] Listen error");
         return;
     }
+
     printf("[server]Waiting at port %d...\n", PORT);
     while (1)
     {
         int usrDescriptor;
-        socklen_t length = sizeof(from);
 
         fflush(stdout);
 
         //blocant
-        if ((usrDescriptor = accept(sd, (struct sockaddr *)&from, &length)) < 0)
+        if (ipMode == "ipv4")
         {
-            perror("[server] Accept error");
-            continue;
+            if ((usrDescriptor = accept(sd, (struct sockaddr *)&from4, &length)) < 0)
+            {
+                perror("[server] Accept error");
+                continue;
+            }
+        }
+        else
+        {
+            if ((usrDescriptor = accept(sd, (struct sockaddr *)&from6, &length)) < 0)
+            {
+                perror("[server] Accept error");
+                continue;
+            }
         }
 
         ProcessNewConnection(usrDescriptor);

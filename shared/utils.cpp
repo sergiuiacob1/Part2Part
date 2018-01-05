@@ -15,7 +15,10 @@ char *ReadMessageInChar(int sd)
     lgRead = 0;
     while (lgRead < lgMsg)
     {
-        lgAux = read(sd, aux, MAX_READ_SIZE);
+        if (lgMsg - lgRead < MAX_READ_SIZE)
+            lgAux = read(sd, aux, lgMsg - lgRead);
+        else
+            lgAux = read(sd, aux, MAX_READ_SIZE);
         if (lgAux <= 0)
         {
             strcpy(msg, "Failed to read MessageInChar");
@@ -47,7 +50,10 @@ string ReadMessageInString(int sd)
 
     while (lgRead < lgRequest)
     {
-        lgAux = read(sd, aux, MAX_READ_SIZE);
+        if (lgRequest - lgRead < MAX_READ_SIZE)
+            lgAux = read(sd, aux, lgRequest - lgRead);
+        else
+            lgAux = read(sd, aux, MAX_READ_SIZE);
         if (lgAux <= 0)
         {
             return "";
@@ -88,6 +94,13 @@ string ReadChunkMessageInString(int sd, int &lgReadTotal, int fileSize)
     return msg;
 }
 
+bool WriteInt(int sd, int val)
+{
+    if (write(sd, &val, 4) < 0)
+        return false;
+    return true;
+}
+
 bool WriteMessage(int sd, const char *msg)
 {
     //if (DescriptorIsValid(sd) == false)
@@ -100,7 +113,10 @@ bool WriteMessage(int sd, const char *msg)
     lgWrite = 0;
     while (lgWrite < lgMsg)
     {
-        lgAux = write(sd, msg + lgWrite, MAX_WRITE_SIZE);
+        if (lgMsg - lgWrite < MAX_WRITE_SIZE)
+            lgAux = write(sd, msg + lgWrite, lgMsg - lgWrite);
+        else
+            lgAux = write(sd, msg + lgWrite, MAX_WRITE_SIZE);
         if (lgAux <= 0)
         {
             return false;

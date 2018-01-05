@@ -31,17 +31,14 @@ class Client
 {
 private:
   int sd;
-  struct sockaddr_in server;
 
   int sdPeer;
-  struct sockaddr_in peerServer, peerFrom;
-  string peerIp, peerPort;
+  string peerIp, peerPort, ipMode;
 
   list<File> downloadableFiles;
   set<string> addedFiles;
   string name;
 
-  void ShowAvailableCommands();
   void AddFile();
   void ProcessCommand(string);
   bool ShowAvailableFiles();
@@ -62,11 +59,13 @@ private:
 public:
   bool ConnectToServer(char *, char *);
   bool CreatePeerServer();
+  void ShowAvailableCommands();
   void ListenToCommands();
   int GetSdPeer() { return sdPeer; }
-  struct sockaddr_in GetPeerFrom() { return peerFrom; }
   static void ListenToConnectedPeer(Client *, int);
   bool ProcessRequest(string, int);
+  void SetIpMode(string _mode) { ipMode = _mode; }
+  string GetIpMode() { return ipMode; }
 };
 
 #endif

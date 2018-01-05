@@ -34,9 +34,8 @@ class Server
 {
 private:
   int sd;
-  struct sockaddr_in server;
-  struct sockaddr_in from;
 
+  string ipMode;
   list<User> users;
   list<string> availableNames;
 
@@ -52,6 +51,7 @@ private:
 
 public:
   ~Server() { close(sd); }
+  void SetIpMode(string _mode) { ipMode = _mode; }
   bool Create();
   void Listen();
   int GetNrOfConnectedUsers() { return users.size(); }

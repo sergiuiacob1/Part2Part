@@ -17,6 +17,7 @@ char *ReadMessageInChar(int);
 string ReadMessageInString(int);
 string ReadChunkMessageInString(int, int &, int);
 
+bool WriteInt (int, int);
 bool WriteMessage(int, const char *);
 bool WriteFileInChunks (int, ifstream &, int);
 bool DescriptorIsValid(int);
