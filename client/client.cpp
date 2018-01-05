@@ -141,8 +141,11 @@ bool Client::CreatePeerServer()
         return false;
     }
 
+    cout << "conn success\n";
+
     if (!SetAddressForPeerServer())
         return false;
+    cout << "set address success\n";
 
     if (SendPeerInfoToServer() == false)
         return false;
@@ -353,21 +356,18 @@ bool Client::SetAddressForPeerServer()
 
             tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
             inet_ntop(AF_INET, tmpAddrPtr, auxIp, INET_ADDRSTRLEN);
-            if (strstr(auxIp, "192.168.") != NULL)
-            {
-                peerIp.assign(auxIp);
+            peerIp.assign(auxIp);
+            if (count(peerIp.begin(), peerIp.end(), '.') == 3)
                 break;
-            }
         }
         if (ifa->ifa_addr->sa_family == AF_INET6 && ipMode == "ipv6") //ipv6
         {
             tmpAddrPtr = &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
             inet_ntop(AF_INET6, tmpAddrPtr, auxIp, INET6_ADDRSTRLEN);
-            if (strlen(auxIp) == 38)
-            {
-                peerIp.assign(auxIp);
+            peerIp.assign(auxIp);
+            if (count(peerIp.begin(), peerIp.end(), ':') ==7)
                 break;
-            }
+            
         }
     }
     if (ifAddrStruct != NULL)

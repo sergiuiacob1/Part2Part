@@ -18,6 +18,7 @@
 #include <fstream>
 #include <set>
 #include <list>
+#include <algorithm>
 #include "./../shared/file.h"
 #include "./../shared/utils.h"
 #define MAX_COMMAND_SIZE 1024
