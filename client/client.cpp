@@ -365,9 +365,8 @@ bool Client::SetAddressForPeerServer()
             tmpAddrPtr = &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
             inet_ntop(AF_INET6, tmpAddrPtr, auxIp, INET6_ADDRSTRLEN);
             peerIp.assign(auxIp);
-            if (count(peerIp.begin(), peerIp.end(), ':') ==7)
+            if (count(peerIp.begin(), peerIp.end(), ':') == 7)
                 break;
-            
         }
     }
     if (ifAddrStruct != NULL)

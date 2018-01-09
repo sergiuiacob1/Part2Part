@@ -6,8 +6,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#define MAX_READ_SIZE 1024
-#define MAX_WRITE_SIZE 1024
+#define MAX_READ_SIZE 1048576
+#define MAX_WRITE_SIZE 1048576
 
 extern int errno;
 
