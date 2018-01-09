@@ -409,6 +409,8 @@ void Client::ShowAvailableCommands()
          << "\033[1;31mshow files\033[0m\n";
     cout << "\t"
          << "\033[1;31mdownload file\033[0m\n";
+    cout << "\t"
+         << "\033[1;31mexit\033[0m\n";
 }
 
 void ParseCommand(string &command)
