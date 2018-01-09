@@ -1,0 +1,128 @@
+\hypertarget{class_server}{}\section{Server Class Reference}
+\label{class_server}\index{Server@{Server}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_server_a53978100fb52a5ffdb82e86c048937bd}\label{class_server_a53978100fb52a5ffdb82e86c048937bd}} 
+void {\bfseries Set\+Ip\+Mode} (string \+\_\+mode)
+\item 
+bool \mbox{\hyperlink{class_server_a8939cd9f717bb164399d1bc9f20a51a2}{Create}} ()
+\begin{DoxyCompactList}\small\item\em Creates the server. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_server_afe47ec998069be828fb082e92836c05b}\label{class_server_afe47ec998069be828fb082e92836c05b}} 
+void \mbox{\hyperlink{class_server_afe47ec998069be828fb082e92836c05b}{Listen}} ()
+\begin{DoxyCompactList}\small\item\em Listen to incoming connections. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_server_aa55bc2a07c61edd701250603c0264d43}\label{class_server_aa55bc2a07c61edd701250603c0264d43}} 
+int {\bfseries Get\+Nr\+Of\+Connected\+Users} ()
+\item 
+bool \mbox{\hyperlink{class_server_a8bf9735f86a6e7ec34ff0547388b7481}{Process\+Request}} (\mbox{\hyperlink{class_user}{User}} $\ast$, string)
+\begin{DoxyCompactList}\small\item\em Process client request. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_server_ae46ab3bded0899d34fc891a42057ed0a}{Send\+Name\+To\+User}} (\mbox{\hyperlink{class_user}{User}} $\ast$)
+\begin{DoxyCompactList}\small\item\em Assigns a username to a connected client. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_server_adf27e4b48c7b39488ec41eb9e6697a68}\label{class_server_adf27e4b48c7b39488ec41eb9e6697a68}} 
+void {\bfseries Add\+User\+Name} (string name)
+\item 
+bool \mbox{\hyperlink{class_server_a2529b191853b2e0915b1c99464c1c792}{Get\+Dwnld\+Info}} (\mbox{\hyperlink{class_user}{User}} $\ast$)
+\begin{DoxyCompactList}\small\item\em Gets from a peer the ip and port from which other peers can download files. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_server_ad195fd80fe64d0d438ae6b516ed3a51d}{Disconnect\+User}} (\mbox{\hyperlink{class_user}{User}} $\ast$)
+\begin{DoxyCompactList}\small\item\em Disconnect a client. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_server_a8939cd9f717bb164399d1bc9f20a51a2}\label{class_server_a8939cd9f717bb164399d1bc9f20a51a2}} 
+\index{Server@{Server}!Create@{Create}}
+\index{Create@{Create}!Server@{Server}}
+\subsubsection{\texorpdfstring{Create()}{Create()}}
+{\footnotesize\ttfamily bool Server\+::\+Create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Creates the server. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_server_ad195fd80fe64d0d438ae6b516ed3a51d}\label{class_server_ad195fd80fe64d0d438ae6b516ed3a51d}} 
+\index{Server@{Server}!Disconnect\+User@{Disconnect\+User}}
+\index{Disconnect\+User@{Disconnect\+User}!Server@{Server}}
+\subsubsection{\texorpdfstring{Disconnect\+User()}{DisconnectUser()}}
+{\footnotesize\ttfamily void Server\+::\+Disconnect\+User (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_user}{User}} $\ast$}]{user }\end{DoxyParamCaption})}
+
+
+
+Disconnect a client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_server_a2529b191853b2e0915b1c99464c1c792}\label{class_server_a2529b191853b2e0915b1c99464c1c792}} 
+\index{Server@{Server}!Get\+Dwnld\+Info@{Get\+Dwnld\+Info}}
+\index{Get\+Dwnld\+Info@{Get\+Dwnld\+Info}!Server@{Server}}
+\subsubsection{\texorpdfstring{Get\+Dwnld\+Info()}{GetDwnldInfo()}}
+{\footnotesize\ttfamily bool Server\+::\+Get\+Dwnld\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_user}{User}} $\ast$}]{user }\end{DoxyParamCaption})}
+
+
+
+Gets from a peer the ip and port from which other peers can download files. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_server_a8bf9735f86a6e7ec34ff0547388b7481}\label{class_server_a8bf9735f86a6e7ec34ff0547388b7481}} 
+\index{Server@{Server}!Process\+Request@{Process\+Request}}
+\index{Process\+Request@{Process\+Request}!Server@{Server}}
+\subsubsection{\texorpdfstring{Process\+Request()}{ProcessRequest()}}
+{\footnotesize\ttfamily bool Server\+::\+Process\+Request (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_user}{User}} $\ast$}]{user,  }\item[{string}]{request }\end{DoxyParamCaption})}
+
+
+
+Process client request. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user} & \\
+\hline
+{\em request} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_server_ae46ab3bded0899d34fc891a42057ed0a}\label{class_server_ae46ab3bded0899d34fc891a42057ed0a}} 
+\index{Server@{Server}!Send\+Name\+To\+User@{Send\+Name\+To\+User}}
+\index{Send\+Name\+To\+User@{Send\+Name\+To\+User}!Server@{Server}}
+\subsubsection{\texorpdfstring{Send\+Name\+To\+User()}{SendNameToUser()}}
+{\footnotesize\ttfamily bool Server\+::\+Send\+Name\+To\+User (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_user}{User}} $\ast$}]{user }\end{DoxyParamCaption})}
+
+
+
+Assigns a username to a connected client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em user} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+server/server.\+h\item 
+server/server.\+cpp\end{DoxyCompactItemize}
