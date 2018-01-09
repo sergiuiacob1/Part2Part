@@ -11,6 +11,7 @@ An example of installing and running the application is:
 * `make` - builds the binary files
 * `./server.out` - start the server on port `1234`
 * `./client.out 127.0.0.1 1234` - connect to localhost on port 1234
+
 After starting the client, the user has access to the following commands:
 * `add file` - the application reads the relative path to a file which the user wishes to put at disposal for download
 * `show files` - shows the available files for download

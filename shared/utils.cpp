@@ -2,6 +2,12 @@
 
 using namespace std;
 
+/**
+ * @brief Reads a message from a given socket descriptor and returns a char pointer containing the read bytes
+ * 
+ * @param sd 
+ * @return char* 
+ */
 char *ReadMessageInChar(int sd)
 {
     char *msg, aux[MAX_READ_SIZE + 1];
