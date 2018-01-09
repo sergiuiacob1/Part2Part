@@ -498,7 +498,7 @@ void Client::ShowAvailableCommands()
  */
 void ParseCommand(string &command)
 {
-    while (command.back() == ' ' || command.back() == '\t')
+    while (command.back() == ' ' || command.back() == '\t' || command.back() == '\r' || command.back() == '\n')
         command.pop_back();
 }
 
@@ -519,6 +519,8 @@ void ReadCommand(string &command)
  */
 void Client::ProcessCommand(string command)
 {
+    if (command.size() == 0)
+        return;
     if (command == "show files")
     {
         if (ShowAvailableFiles() == false)
@@ -534,8 +536,10 @@ void Client::ProcessCommand(string command)
         close(sdPeer);
         exit(0);
     }
-
-    cout << "Command is not recognized\n";
+    else
+    {
+        cout << "Command is not recognized\n";
+    }
 }
 
 /**
