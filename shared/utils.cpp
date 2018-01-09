@@ -38,7 +38,12 @@ char *ReadMessageInChar(int sd)
 
     return msg;
 }
-
+/**
+ * @brief Reads a message from a given socket descriptor and returns a string containing the read bytes
+ * 
+ * @param sd 
+ * @return string 
+ */
 string ReadMessageInString(int sd)
 {
     string request = "";
@@ -73,6 +78,14 @@ string ReadMessageInString(int sd)
     return request;
 }
 
+/**
+ * @brief Reads a chunk contained in a large message from a given socket descriptor and returns a string containing the read bytes
+ * 
+ * @param sd 
+ * @param lgReadTotal 
+ * @param fileSize 
+ * @return string 
+ */
 string ReadChunkMessageInString(int sd, int &lgReadTotal, int fileSize)
 {
     string msg = "";
@@ -100,6 +113,14 @@ string ReadChunkMessageInString(int sd, int &lgReadTotal, int fileSize)
     return msg;
 }
 
+/**
+ * @brief Writes an integer to the given socked descriptor
+ * 
+ * @param sd 
+ * @param val 
+ * @return true 
+ * @return false 
+ */
 bool WriteInt(int sd, int val)
 {
     if (write(sd, &val, 4) < 0)
@@ -107,6 +128,14 @@ bool WriteInt(int sd, int val)
     return true;
 }
 
+/**
+ * @brief Writes a message to the given descriptor
+ * 
+ * @param sd 
+ * @param msg 
+ * @return true 
+ * @return false 
+ */
 bool WriteMessage(int sd, const char *msg)
 {
     //if (DescriptorIsValid(sd) == false)
@@ -132,6 +161,15 @@ bool WriteMessage(int sd, const char *msg)
     return true;
 }
 
+/**
+ * @brief Writes any kind of file in chunks to a given socket descriptor
+ * 
+ * @param peerDescriptor 
+ * @param fd 
+ * @param fileSize 
+ * @return true 
+ * @return false 
+ */
 bool WriteFileInChunks(int peerDescriptor, ifstream &fd, int fileSize)
 {
     char auxRead[MAX_READ_SIZE + 1];
@@ -154,6 +192,13 @@ bool WriteFileInChunks(int peerDescriptor, ifstream &fd, int fileSize)
     return true;
 }
 
+/**
+ * @brief Checks whether a file descriptor is valid
+ * 
+ * @param sd 
+ * @return true 
+ * @return false 
+ */
 bool DescriptorIsValid(int sd)
 {
     errno = 0;

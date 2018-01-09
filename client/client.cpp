@@ -9,6 +9,14 @@ string GetAvailableFiles(int);
 File GetFile();
 void ProcessNewConnection(Client *, int);
 
+/**
+ * @brief Connects to the server at the given address and port
+ * 
+ * @param address 
+ * @param port 
+ * @return true 
+ * @return false 
+ */
 bool Client::ConnectToServer(char *address, char *port)
 {
     struct sockaddr_in6 server6;
@@ -70,6 +78,12 @@ bool Client::ConnectToServer(char *address, char *port)
     return true;
 }
 
+/**
+ * @brief Creates the server-part from this peer
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Client::CreatePeerServer()
 {
     bool connectedSuccessfully;
@@ -157,12 +171,21 @@ bool Client::CreatePeerServer()
     return true;
 }
 
+/**
+ * @brief Creates a thread which listens to other peers
+ * 
+ */
 void Client::CreatePeerListener()
 {
     thread threadPeerListener(ListenToPeers, this);
     threadPeerListener.detach();
 }
 
+/**
+ * @brief Listens to other peers who want to connect to this peer
+ * 
+ * @param client 
+ */
 void Client::ListenToPeers(Client *client)
 {
     //create peer server part
@@ -216,6 +239,12 @@ void Client::ListenToPeers(Client *client)
     }
 }
 
+/**
+ * @brief This function is called when a certain peer connects to me
+ * 
+ * @param client 
+ * @param peerDescriptor 
+ */
 void Client::ListenToConnectedPeer(Client *client, int peerDescriptor)
 {
     string request;
@@ -235,6 +264,14 @@ void Client::ListenToConnectedPeer(Client *client, int peerDescriptor)
     }
 }
 
+/**
+ * @brief Called when this peer receives a request
+ * 
+ * @param request 
+ * @param peerDescriptor 
+ * @return true 
+ * @return false 
+ */
 bool Client::ProcessRequest(string request, int peerDescriptor)
 {
     if (request == "download file")
@@ -246,6 +283,13 @@ bool Client::ProcessRequest(string request, int peerDescriptor)
     return true;
 }
 
+/**
+ * @brief Sends a file to a peer who wants to download from me
+ * 
+ * @param peerDescriptor 
+ * @return true 
+ * @return false 
+ */
 bool Client::SendFileToPeer(int peerDescriptor)
 {
     ifstream fd;
@@ -303,6 +347,14 @@ bool Client::SendFileToPeer(int peerDescriptor)
     return true;
 }
 
+/**
+ * @brief Checks if this user has a certain file
+ * 
+ * @param fileName 
+ * @param filePath 
+ * @return true 
+ * @return false 
+ */
 bool Client::IHaveFile(string fileName, char *filePath)
 {
     for (auto it : downloadableFiles)
@@ -316,6 +368,12 @@ bool Client::IHaveFile(string fileName, char *filePath)
     return false;
 }
 
+/**
+ * @brief Sends to the server the ip address and the port to which this peer listens to
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Client::SendPeerInfoToServer()
 {
     if (WriteMessage(sd, "add peer") == false)
@@ -338,6 +396,12 @@ bool Client::SendPeerInfoToServer()
     return true;
 }
 
+/**
+ * @brief Assings a ip address to this peer
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Client::SetAddressForPeerServer()
 {
     struct ifaddrs *ifAddrStruct = NULL;
@@ -379,6 +443,12 @@ bool Client::SetAddressForPeerServer()
     return false;
 }
 
+/**
+ * @brief Receives a username from the server with which this client is identified
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Client::GetClientNameFromServer()
 {
     name = ReadMessageInString(sd);
@@ -387,6 +457,10 @@ bool Client::GetClientNameFromServer()
     return true;
 }
 
+/**
+ * @brief Listen to commands from the console
+ * 
+ */
 void Client::ListenToCommands()
 {
     string command;
@@ -400,6 +474,10 @@ void Client::ListenToCommands()
     close(sd);
 }
 
+/**
+ * @brief Shows the available commands the user can make
+ * 
+ */
 void Client::ShowAvailableCommands()
 {
     cout << "Available commands:\n";
@@ -413,17 +491,32 @@ void Client::ShowAvailableCommands()
          << "\033[1;31mexit\033[0m\n";
 }
 
+/**
+ * @brief Remove white characters from the back of a given string
+ * 
+ * @param command 
+ */
 void ParseCommand(string &command)
 {
     while (command.back() == ' ' || command.back() == '\t')
         command.pop_back();
 }
 
+/**
+ * @brief Reads a string
+ * 
+ * @param command 
+ */
 void ReadCommand(string &command)
 {
     getline(cin, command);
 }
 
+/**
+ * @brief Checks what kind of command the user asked for
+ * 
+ * @param command 
+ */
 void Client::ProcessCommand(string command)
 {
     if (command == "show files")
@@ -431,19 +524,24 @@ void Client::ProcessCommand(string command)
         if (ShowAvailableFiles() == false)
             cout << "No available files at this time\n\n";
     }
-    if (command == "add file")
+    else if (command == "add file")
         AddFile();
-    if (command == "download file")
+    else if (command == "download file")
         DownloadFile();
-
-    if (command == "exit")
+    else if (command == "exit")
     {
         close(sd);
         close(sdPeer);
         exit(0);
     }
+
+    cout << "Command is not recognized\n";
 }
 
+/**
+ * @brief Adds a new file available for download
+ * 
+ */
 void Client::AddFile()
 {
     File newFile;
@@ -470,6 +568,13 @@ void Client::AddFile()
     SendFileToServer(newFile);
 }
 
+/**
+ * @brief Sends a new file to the server and marks it as downladable
+ * 
+ * @param file 
+ * @return true 
+ * @return false 
+ */
 bool Client::SendFileToServer(File file)
 {
     if (WriteMessage(sd, "add file") == false)
@@ -486,6 +591,12 @@ bool Client::SendFileToServer(File file)
     return true;
 }
 
+/**
+ * @brief Shows the available files that can be downloaded
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Client::ShowAvailableFiles()
 {
     string availableFiles;
@@ -509,7 +620,12 @@ bool Client::ShowAvailableFiles()
 
     return gotFiles;
 }
-
+/**
+ * @brief Reads the available files for download from the server
+ * 
+ * @param sd 
+ * @return string 
+ */
 string GetAvailableFiles(int sd)
 {
     string response = "";
@@ -517,6 +633,10 @@ string GetAvailableFiles(int sd)
     return response;
 }
 
+/**
+ * @brief Downloads a file
+ * 
+ */
 void Client::DownloadFile()
 {
     string fileName, userName;
@@ -562,6 +682,13 @@ void Client::DownloadFile()
     }
 }
 
+/**
+ * @brief Gets from the server the ip and port from which a file can be downloaded
+ * 
+ * @param fileName 
+ * @param userName 
+ * @return FileStatus 
+ */
 FileStatus Client::GetFileFromServer(string fileName, string userName)
 {
     string ipAddress, userPort;
@@ -600,6 +727,14 @@ FileStatus Client::GetFileFromServer(string fileName, string userName)
     return DownloadFileFromClient(ipAddress, userPort, fileName);
 }
 
+/**
+ * @brief Downloads a file from the peer which has that file
+ * 
+ * @param ipAddress 
+ * @param userPort 
+ * @param fileName 
+ * @return FileStatus 
+ */
 FileStatus Client::DownloadFileFromClient(string ipAddress, string userPort, string fileName)
 {
     string response;
@@ -643,6 +778,13 @@ FileStatus Client::DownloadFileFromClient(string ipAddress, string userPort, str
     return downloadResult;
 }
 
+/**
+ * @brief Downloads and saves the file locally
+ * 
+ * @param fileName 
+ * @param sdDownload 
+ * @return FileStatus 
+ */
 FileStatus Client::SaveFile(string fileName, int sdDownload)
 {
     string downloadedFileName, fileSize, auxStr;
@@ -682,6 +824,13 @@ FileStatus Client::SaveFile(string fileName, int sdDownload)
     return FileStatus::SUCCESS;
 }
 
+/**
+ * @brief Connect to another peer
+ * 
+ * @param ipAddress 
+ * @param userPort 
+ * @return int 
+ */
 int Client::ConnectToPeerClient(string ipAddress, string userPort)
 {
     struct sockaddr_in peerOwningFile4;

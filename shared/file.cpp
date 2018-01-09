@@ -2,6 +2,12 @@
 
 mutex filesBeingChanged;
 
+/**
+ * @brief Creates a new file from the given path
+ * 
+ * @param _filePath 
+ * @return FileStatus 
+ */
 FileStatus File::CreateFile(char *_filePath)
 {
     if (access(_filePath, F_OK) == -1)

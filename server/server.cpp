@@ -4,6 +4,12 @@ void ParseRequest(string &);
 
 mutex modifyUsersMutex;
 
+/**
+ * @brief Creates the server
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Server::Create()
 {
     struct sockaddr_in6 serv_addr;
@@ -65,6 +71,10 @@ bool Server::Create()
     return true;
 }
 
+/**
+ * @brief Reads a list of usernames which will assign to the connected clients
+ * 
+ */
 void Server::BuildAvailableNames()
 {
     string name;
@@ -78,6 +88,10 @@ void Server::BuildAvailableNames()
     }
 }
 
+/**
+ * @brief Listen to incoming connections
+ * 
+ */
 void Server::Listen()
 {
     struct sockaddr_in from4;
@@ -127,6 +141,11 @@ void Server::Listen()
     }
 }
 
+/**
+ * @brief Called when a new client connects to the server
+ * 
+ * @param usrDescriptor 
+ */
 void Server::ProcessNewConnection(int usrDescriptor)
 {
     modifyUsersMutex.lock();
@@ -138,6 +157,12 @@ void Server::ProcessNewConnection(int usrDescriptor)
     newThread.detach();
 }
 
+/**
+ * @brief Listen for commands from a connected client
+ * 
+ * @param server 
+ * @param user 
+ */
 void Server::ListenToUser(Server *server, User *user)
 {
     string request;
@@ -162,6 +187,11 @@ void Server::ListenToUser(Server *server, User *user)
     server->DisconnectUser(user);
 }
 
+/**
+ * @brief Disconnect a client
+ * 
+ * @param user 
+ */
 void Server::DisconnectUser(User *user)
 {
     modifyUsersMutex.lock();
@@ -178,6 +208,13 @@ void Server::DisconnectUser(User *user)
     modifyUsersMutex.unlock();
 }
 
+/**
+ * @brief Assigns a username to a connected client
+ * 
+ * @param user 
+ * @return true 
+ * @return false 
+ */
 bool Server::SendNameToUser(User *user)
 {
     string clientName = availableNames.back();
@@ -193,6 +230,14 @@ bool Server::SendNameToUser(User *user)
     return true;
 }
 
+/**
+ * @brief Process client request
+ * 
+ * @param user 
+ * @param request 
+ * @return true 
+ * @return false 
+ */
 bool Server::ProcessRequest(User *user, string request)
 {
     ParseRequest(request);
@@ -214,6 +259,13 @@ bool Server::ProcessRequest(User *user, string request)
     return true;
 }
 
+/**
+ * @brief Adds another peer to the server so that it may upload files
+ * 
+ * @param user 
+ * @return true 
+ * @return false 
+ */
 bool Server::AddPeer(User *user)
 {
     if (GetDwnldInfo(user) == false)
@@ -227,6 +279,13 @@ bool Server::AddPeer(User *user)
     return true;
 }
 
+/**
+ * @brief Gets from a peer the ip and port from which other peers can download files
+ * 
+ * @param user 
+ * @return true 
+ * @return false 
+ */
 bool Server::GetDwnldInfo(User *user)
 {
     string localIp, peerPort;
@@ -242,6 +301,11 @@ bool Server::GetDwnldInfo(User *user)
     return true;
 }
 
+/**
+ * @brief Checks if a file requested for download exists and sends to the peer the necessary info for download
+ * 
+ * @param user 
+ */
 void Server::DownloadFileRequest(User *user)
 {
     User *userOwningFile;
@@ -274,6 +338,13 @@ void Server::DownloadFileRequest(User *user)
     }
 }
 
+/**
+ * @brief Sends the necessary download information (ip, port) to a peer requesting download
+ * 
+ * @param user 
+ * @param address 
+ * @param port 
+ */
 void Server::SendDwnldInfoToUser(User *user, string address, string port)
 {
     modifyUsersMutex.lock();
@@ -292,6 +363,13 @@ void Server::SendDwnldInfoToUser(User *user, string address, string port)
     modifyUsersMutex.unlock();
 }
 
+/**
+ * @brief Checks if a certain user has that file
+ * 
+ * @param fileName 
+ * @param userName 
+ * @return User* 
+ */
 User *Server::FileExists(string fileName, string userName)
 {
     modifyUsersMutex.lock();
@@ -316,6 +394,11 @@ User *Server::FileExists(string fileName, string userName)
     return nullptr;
 }
 
+/**
+ * @brief Adds a file to the server for download
+ * 
+ * @param user 
+ */
 void Server::AddFileToServer(User *user)
 {
     File newFile;
@@ -340,7 +423,11 @@ void Server::AddFileToServer(User *user)
 
     user->AddUserFile(newFile);
 }
-
+/**
+ * @brief Sends the available files for download to a connected client
+ * 
+ * @param user 
+ */
 void Server::SendAvailableFiles(User *user)
 {
     int sd = user->GetUsrDescriptor(), totalFilesSize = 0;
@@ -387,7 +474,11 @@ void Server::SendAvailableFiles(User *user)
 
     WriteMessage(user->GetUsrDescriptor(), ""); //EOF
 }
-
+/**
+ * @brief Removes trailing blank characters
+ * 
+ * @param request 
+ */
 void ParseRequest(string &request)
 {
     while (request.back() == ' ' || request.back() == '\t')
