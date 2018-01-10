@@ -155,11 +155,8 @@ bool Client::CreatePeerServer()
         return false;
     }
 
-    cout << "conn success\n";
-
     if (!SetAddressForPeerServer())
         return false;
-    cout << "set address success\n";
 
     if (SendPeerInfoToServer() == false)
         return false;
@@ -536,10 +533,10 @@ void Client::ProcessCommand(string command)
         close(sdPeer);
         exit(0);
     }
-    else
+    /*else
     {
         cout << "Command is not recognized\n";
-    }
+    }*/
 }
 
 /**

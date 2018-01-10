@@ -1,0 +1,19 @@
+<map id="main" name="main">
+<area shape="rect" id="node2" href="$class_client.html#a882283c65452d0b52bd2de2764bc3950" title="Client::SetIpMode" alt="" coords="149,5,276,32"/>
+<area shape="rect" id="node3" href="$class_client.html#a26c0b389de6fe436880792e53a839520" title="Connects to the server at the given address and port. " alt="" coords="129,56,296,83"/>
+<area shape="rect" id="node4" href="$class_client.html#aa25ebf4ae857f69835c281513fa5f173" title="Creates the server&#45;part from this peer. " alt="" coords="129,107,297,133"/>
+<area shape="rect" id="node7" href="$class_client.html#a83fb10f02ae7889d82dbbf14b5e6b8ef" title="Shows the available commands the user can make. " alt="" coords="104,157,321,184"/>
+<area shape="rect" id="node8" href="$class_client.html#a0ce7f1ab188209d1deb6ed794d703952" title="Listen to commands from the console. " alt="" coords="122,208,303,235"/>
+<area shape="rect" id="node5" href="$class_client.html#aebf88f683281f67890aa3d7f1cc66967" title="Client::GetSdPeer" alt="" coords="369,56,497,83"/>
+<area shape="rect" id="node6" href="$class_client.html#a86746a15c7d19387e40805e7d55fa83a" title="Client::GetIpMode" alt="" coords="369,107,497,133"/>
+<area shape="rect" id="node9" href="$client_8cpp.html#ae6e52b1754e534c169490a418a53369c" title="Reads a string. " alt="" coords="377,183,490,209"/>
+<area shape="rect" id="node18" href="$client_8cpp.html#a9c0daedd2ac636cd14f8256c6a55b9fb" title="Remove white characters from the back of a given string. " alt="" coords="375,233,491,260"/>
+<area shape="rect" id="node10" href="$class_file.html#a9f15cc1e3e67cf2def80ee6d1c885f2f" title="Creates a new file from the given path. " alt="" coords="554,56,665,83"/>
+<area shape="rect" id="node11" href="$class_file.html#af454c0df4f4094da25036bbabfa26dc8" title="File::GetFilePath" alt="" coords="549,107,669,133"/>
+<area shape="rect" id="node12" href="$utils_8cpp.html#aa40718b88767f41a66a192a296ced109" title="Writes a message to the given descriptor. " alt="" coords="763,196,869,223"/>
+<area shape="rect" id="node13" href="$class_file.html#a752327abcca875737cf92e1d4a87f97e" title="File::GetFileName" alt="" coords="545,208,673,235"/>
+<area shape="rect" id="node14" href="$class_file.html#a1b17dc347fae9dec28fab32c4d94acde" title="File::GetFileSize" alt="" coords="550,259,669,285"/>
+<area shape="rect" id="node15" href="$client_8cpp.html#a8367933261d3d3c8e43a28c258dc8e51" title="Reads the available files for download from the server. " alt="" coords="547,309,671,336"/>
+<area shape="rect" id="node16" href="$utils_8cpp.html#a701bf3b954d8d6262e5c8762a60066a4" title="Reads a message from a given socket descriptor and returns a string containing the read bytes..." alt="" coords="741,284,891,311"/>
+<area shape="rect" id="node17" href="$utils_8cpp.html#a4ce68d8c012de014ca3f689b2deb1204" title="Reads a chunk contained in a large message from a given socket descriptor and returns a string contai..." alt="" coords="721,335,911,361"/>
+</map>

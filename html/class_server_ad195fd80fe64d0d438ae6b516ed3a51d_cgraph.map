@@ -1,0 +1,4 @@
+<map id="Server::DisconnectUser" name="Server::DisconnectUser">
+<area shape="rect" id="node2" href="$class_user.html#ab0f591a190de561ad4bbe279f82de4b1" title="User::GetName" alt="" coords="236,5,351,32"/>
+<area shape="rect" id="node3" href="$class_server.html#adf27e4b48c7b39488ec41eb9e6697a68" title="Server::AddUserName" alt="" coords="216,56,371,83"/>
+</map>

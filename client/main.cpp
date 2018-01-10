@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  sleep(0.1);
+  sleep(1);
   client.ShowAvailableCommands();
   client.ListenToCommands();
 

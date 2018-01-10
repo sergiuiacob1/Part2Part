@@ -1,0 +1,5 @@
+<map id="Client::ProcessRequest" name="Client::ProcessRequest">
+<area shape="rect" id="node2" href="$utils_8cpp.html#a701bf3b954d8d6262e5c8762a60066a4" title="Reads a message from a given socket descriptor and returns a string containing the read bytes..." alt="" coords="215,5,365,32"/>
+<area shape="rect" id="node3" href="$utils_8cpp.html#aa40718b88767f41a66a192a296ced109" title="Writes a message to the given descriptor. " alt="" coords="237,56,343,83"/>
+<area shape="rect" id="node4" href="$utils_8cpp.html#a9d00667548fe6453b43f31a521dc373d" title="Writes any kind of file in chunks to a given socket descriptor. " alt="" coords="225,107,355,133"/>
+</map>

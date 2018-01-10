@@ -1,7 +1,10 @@
 #Part2Part
 This is a peer-to-peer application meant to share files with anybody who's connected to the server. Any client running this application will have support for uploading and downloading shared files on the network. It has support for both IPv4, IPv6, but only one of it may be used at a time.
 ##Dependencies
-You need the c++14 standard in order to compile and build the server and the client and Internet connectivity.
+You need the c++14 standard in order to compile and build the server and the client and Internet connectivity. You may install the standard like so:
+* `sudo add-apt-repository ppa:ubuntu-toolchain-r/test`
+* `sudo apt-get update`
+* `sudo apt-get install g++-4.9`
 ##Installation
 Download the project on your machine. After unzip-ing the downloaded file, navigate from the terminal to the unarchived folder and simply run the `make` command.
 ##Running the application
@@ -17,3 +20,7 @@ After starting the client, the user has access to the following commands:
 * `show files` - shows the available files for download
 * `download file` - downloads a specific file; additional instructions are given inside the application
 * `exit` - exits the application
+##Bibliography
+The starting point consisted in a source code from https://profs.info.uaic.ro/~computernetworks/
+* https://profs.info.uaic.ro/~computernetworks/files/NetEx/S12/ServerConcThread/servTcpConcTh2.c for the server
+* https://profs.info.uaic.ro/~computernetworks/files/NetEx/S12/ServerConcThread/cliTcpNr.c for the client

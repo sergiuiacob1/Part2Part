@@ -1,0 +1,11 @@
+<map id="Server::GetDwnldInfo" name="Server::GetDwnldInfo">
+<area shape="rect" id="node2" href="$utils_8cpp.html#a701bf3b954d8d6262e5c8762a60066a4" title="Reads a message from a given socket descriptor and returns a string containing the read bytes..." alt="" coords="208,5,359,32"/>
+<area shape="rect" id="node3" href="$class_user.html#a5befaded3204a579516eb710c79b2a78" title="User::GetUsrDescriptor" alt="" coords="203,56,363,83"/>
+<area shape="rect" id="node4" href="$class_user.html#ae2bed2c711a835679d465c972d9174cf" title="User::SetDwnldInfo" alt="" coords="215,107,352,133"/>
+<area shape="rect" id="node5" href="$class_user.html#a8568b6478b10afccc4d7ebc4873134da" title="User::GetDwnldAddress" alt="" coords="201,157,365,184"/>
+<area shape="rect" id="node6" href="$class_user.html#afdb7c6b57252e3ad038cf41001beff55" title="User::GetDwnldPort" alt="" coords="213,208,353,235"/>
+<area shape="rect" id="node7" href="$utils_8cpp.html#aa40718b88767f41a66a192a296ced109" title="Writes a message to the given descriptor. " alt="" coords="230,259,337,285"/>
+<area shape="rect" id="node8" href="$class_file.html#a52789d87184ed40ef0e2019878f8e3ae" title="File::SetFileName" alt="" coords="220,309,347,336"/>
+<area shape="rect" id="node9" href="$class_file.html#ae529b31014cff04aa7daba147884320e" title="File::SetFileSize" alt="" coords="224,360,343,387"/>
+<area shape="rect" id="node10" href="$class_user.html#a09281e088a33ff69575ecb32ce982df2" title="User::AddUserFile" alt="" coords="218,411,349,437"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="Client::ListenToConnectedPeer" name="Client::ListenToConnectedPeer">
+<area shape="rect" id="node2" href="$utils_8cpp.html#a701bf3b954d8d6262e5c8762a60066a4" title="Reads a message from a given socket descriptor and returns a string containing the read bytes..." alt="" coords="467,5,617,32"/>
+<area shape="rect" id="node3" href="$class_client.html#a0d9d0b3787dc8991f4e748220cc2ae93" title="Called when this peer receives a request. " alt="" coords="257,56,419,83"/>
+<area shape="rect" id="node4" href="$utils_8cpp.html#aa40718b88767f41a66a192a296ced109" title="Writes a message to the given descriptor. " alt="" coords="489,56,595,83"/>
+<area shape="rect" id="node5" href="$utils_8cpp.html#a9d00667548fe6453b43f31a521dc373d" title="Writes any kind of file in chunks to a given socket descriptor. " alt="" coords="477,107,607,133"/>
+</map>

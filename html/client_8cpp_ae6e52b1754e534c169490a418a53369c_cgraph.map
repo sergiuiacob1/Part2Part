@@ -1,0 +1,10 @@
+<map id="ReadCommand" name="ReadCommand">
+<area shape="rect" id="node2" href="$class_file.html#a9f15cc1e3e67cf2def80ee6d1c885f2f" title="Creates a new file from the given path. " alt="" coords="175,5,286,32"/>
+<area shape="rect" id="node3" href="$class_file.html#af454c0df4f4094da25036bbabfa26dc8" title="File::GetFilePath" alt="" coords="171,56,291,83"/>
+<area shape="rect" id="node4" href="$utils_8cpp.html#aa40718b88767f41a66a192a296ced109" title="Writes a message to the given descriptor. " alt="" coords="384,145,491,172"/>
+<area shape="rect" id="node5" href="$class_file.html#a752327abcca875737cf92e1d4a87f97e" title="File::GetFileName" alt="" coords="167,157,295,184"/>
+<area shape="rect" id="node6" href="$class_file.html#a1b17dc347fae9dec28fab32c4d94acde" title="File::GetFileSize" alt="" coords="171,208,290,235"/>
+<area shape="rect" id="node7" href="$client_8cpp.html#a8367933261d3d3c8e43a28c258dc8e51" title="Reads the available files for download from the server. " alt="" coords="169,259,293,285"/>
+<area shape="rect" id="node8" href="$utils_8cpp.html#a701bf3b954d8d6262e5c8762a60066a4" title="Reads a message from a given socket descriptor and returns a string containing the read bytes..." alt="" coords="362,233,513,260"/>
+<area shape="rect" id="node9" href="$utils_8cpp.html#a4ce68d8c012de014ca3f689b2deb1204" title="Reads a chunk contained in a large message from a given socket descriptor and returns a string contai..." alt="" coords="343,284,532,311"/>
+</map>

@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['processrequest',['ProcessRequest',['../class_client.html#a0d9d0b3787dc8991f4e748220cc2ae93',1,'Client::ProcessRequest()'],['../class_server.html#a8bf9735f86a6e7ec34ff0547388b7481',1,'Server::ProcessRequest()']]]
+  ['listen',['Listen',['../class_server.html#afe47ec998069be828fb082e92836c05b',1,'Server']]],
+  ['listentocommands',['ListenToCommands',['../class_client.html#a0ce7f1ab188209d1deb6ed794d703952',1,'Client']]],
+  ['listentoconnectedpeer',['ListenToConnectedPeer',['../class_client.html#ab94c5088dc0e8924cd2803cfea1baed6',1,'Client']]]
 ];

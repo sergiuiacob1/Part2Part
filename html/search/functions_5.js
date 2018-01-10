@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['sendnametouser',['SendNameToUser',['../class_server.html#ae46ab3bded0899d34fc891a42057ed0a',1,'Server']]],
-  ['showavailablecommands',['ShowAvailableCommands',['../class_client.html#a83fb10f02ae7889d82dbbf14b5e6b8ef',1,'Client']]]
+  ['main',['main',['../client_2main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;main.cpp'],['../server_2main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;main.cpp']]]
 ];

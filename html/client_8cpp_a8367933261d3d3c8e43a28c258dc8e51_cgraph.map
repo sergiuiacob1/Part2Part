@@ -1,0 +1,5 @@
+<map id="GetAvailableFiles" name="GetAvailableFiles">
+<area shape="rect" id="node2" href="$utils_8cpp.html#a701bf3b954d8d6262e5c8762a60066a4" title="Reads a message from a given socket descriptor and returns a string containing the read bytes..." alt="" coords="197,5,347,32"/>
+<area shape="rect" id="node3" href="$utils_8cpp.html#aa40718b88767f41a66a192a296ced109" title="Writes a message to the given descriptor. " alt="" coords="219,56,325,83"/>
+<area shape="rect" id="node4" href="$utils_8cpp.html#a4ce68d8c012de014ca3f689b2deb1204" title="Reads a chunk contained in a large message from a given socket descriptor and returns a string contai..." alt="" coords="177,107,367,133"/>
+</map>

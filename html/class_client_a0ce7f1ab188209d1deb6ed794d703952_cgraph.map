@@ -1,0 +1,12 @@
+<map id="Client::ListenToCommands" name="Client::ListenToCommands">
+<area shape="rect" id="node2" href="$client_8cpp.html#ae6e52b1754e534c169490a418a53369c" title="Reads a string. " alt="" coords="236,132,349,159"/>
+<area shape="rect" id="node11" href="$client_8cpp.html#a9c0daedd2ac636cd14f8256c6a55b9fb" title="Remove white characters from the back of a given string. " alt="" coords="235,183,351,209"/>
+<area shape="rect" id="node3" href="$class_file.html#a9f15cc1e3e67cf2def80ee6d1c885f2f" title="Creates a new file from the given path. " alt="" coords="407,5,518,32"/>
+<area shape="rect" id="node4" href="$class_file.html#af454c0df4f4094da25036bbabfa26dc8" title="File::GetFilePath" alt="" coords="403,56,523,83"/>
+<area shape="rect" id="node5" href="$utils_8cpp.html#aa40718b88767f41a66a192a296ced109" title="Writes a message to the given descriptor. " alt="" coords="616,145,723,172"/>
+<area shape="rect" id="node6" href="$class_file.html#a752327abcca875737cf92e1d4a87f97e" title="File::GetFileName" alt="" coords="399,157,527,184"/>
+<area shape="rect" id="node7" href="$class_file.html#a1b17dc347fae9dec28fab32c4d94acde" title="File::GetFileSize" alt="" coords="403,208,522,235"/>
+<area shape="rect" id="node8" href="$client_8cpp.html#a8367933261d3d3c8e43a28c258dc8e51" title="Reads the available files for download from the server. " alt="" coords="401,259,525,285"/>
+<area shape="rect" id="node9" href="$utils_8cpp.html#a701bf3b954d8d6262e5c8762a60066a4" title="Reads a message from a given socket descriptor and returns a string containing the read bytes..." alt="" coords="594,233,745,260"/>
+<area shape="rect" id="node10" href="$utils_8cpp.html#a4ce68d8c012de014ca3f689b2deb1204" title="Reads a chunk contained in a large message from a given socket descriptor and returns a string contai..." alt="" coords="575,284,764,311"/>
+</map>

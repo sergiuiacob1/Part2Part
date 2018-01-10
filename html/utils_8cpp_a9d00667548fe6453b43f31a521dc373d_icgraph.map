@@ -1,0 +1,4 @@
+<map id="WriteFileInChunks" name="WriteFileInChunks">
+<area shape="rect" id="node2" href="$class_client.html#a0d9d0b3787dc8991f4e748220cc2ae93" title="Called when this peer receives a request. " alt="" coords="184,5,345,32"/>
+<area shape="rect" id="node3" href="$class_client.html#ab94c5088dc0e8924cd2803cfea1baed6" title="This function is called when a certain peer connects to me. " alt="" coords="393,5,597,32"/>
+</map>
