@@ -1,5 +1,0 @@
-<map id="Server::SendNameToUser" name="Server::SendNameToUser">
-<area shape="rect" id="node2" href="$utils_8cpp.html#aa40718b88767f41a66a192a296ced109" title="Writes a message to the given descriptor. " alt="" coords="256,5,363,32"/>
-<area shape="rect" id="node3" href="$class_user.html#a5befaded3204a579516eb710c79b2a78" title="User::GetUsrDescriptor" alt="" coords="229,56,389,83"/>
-<area shape="rect" id="node4" href="$class_user.html#a58ff5727a81dbcea5cc50bd947d7a842" title="User::SetName" alt="" coords="253,107,366,133"/>
-</map>

@@ -1,5 +1,0 @@
-<map id="User::SetName" name="User::SetName">
-<area shape="rect" id="node2" href="$class_server.html#ae46ab3bded0899d34fc891a42057ed0a" title="Assigns a username to a connected client. " alt="" coords="167,5,343,32"/>
-<area shape="rect" id="node3" href="$class_server.html#afe47ec998069be828fb082e92836c05b" title="Listen to incoming connections. " alt="" coords="391,5,493,32"/>
-<area shape="rect" id="node4" href="$server_2main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="main" alt="" coords="541,5,592,32"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="User::GetName" name="User::GetName">
-<area shape="rect" id="node2" href="$class_server.html#afe47ec998069be828fb082e92836c05b" title="Listen to incoming connections. " alt="" coords="381,24,484,51"/>
-<area shape="rect" id="node4" href="$class_server.html#ad195fd80fe64d0d438ae6b516ed3a51d" title="Disconnect a client. " alt="" coords="169,24,332,51"/>
-<area shape="rect" id="node5" href="$class_server.html#a8bf9735f86a6e7ec34ff0547388b7481" title="Process client request. " alt="" coords="168,75,333,101"/>
-<area shape="rect" id="node3" href="$server_2main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="main" alt="" coords="532,24,583,51"/>
-</map>
